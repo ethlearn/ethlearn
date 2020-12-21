@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <title>Course</title>
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <script src="https://wzrd.in/standalone/buffer"></script>
+    <script src="https://unpkg.com/ipfs-api@9.0.0/dist/index.js"
+    integrity="sha384-5bXRcW9kyxxnSMbOoHzraqa7Z0PQWIao+cgeg327zit1hz5LZCEbIMx/LWKPReuB"
+    crossorigin="anonymous"></script>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+    <script type="text/javascript" src="jquery.serializejson.js"></script>
+    <script src="https://unpkg.com/ipfs@0.41.0-rc.2/dist/index.min.js"></script>
+    <script src="https://unpkg.com/hlsjs-ipfs-loader@0.2.3/dist/index.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+    <script type="text/javascript" src="viewCourse.js">
+
+    </script>
+    <style media="screen">
+      ul{
+        list-style-type: none;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="data">
+      <h1 id="cTitle"></h1>
+      <iframe id="pdfFile" width="100%" height="500px"></iframe>
+      <form id='form'>
+          <fieldset>
+            <legend>Questions</legend>
+            <div id="questionsResult">
+              <!--<ol>
+                <li>hi
+                    <ul style="list-style-type:none;">
+                      <li><input type="radio" name="h" value=""></li>
+                      <li><input type="radio" name="h" value=""></li>
+                    </ul>
+                </li>
+              </ol>-->
+            </div>
+          </fieldset>
+          <button onclick="submitAnswer(); return false;">Submit</button>
+      </form>
+    </div>
+  </body>
+</html>

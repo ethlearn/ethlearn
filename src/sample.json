@@ -1,0 +1,22 @@
+{
+  "course_title": "Blockchain",
+  "questionCount": "2",
+  "Q1": {
+    "question": "Blockchain is a ledger with peer to peer network. ",
+    "optionCount": "2",
+    "Option": {
+      "1": "Distributed",
+      "2": "Centralised"
+    },
+    "Answer": "Distributed"
+  },
+  "Q2": {
+    "question": "Blockchain is decentralized.",
+    "optionCount": "2",
+    "Option": {
+      "1": "true",
+      "2": "false"
+    },
+    "Answer": "true"
+  }
+}

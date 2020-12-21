@@ -1,0 +1,46 @@
+.row-header {
+  margin: 0px auto;
+  padding: 0px;
+}
+
+.row-content {
+  margin: 0px auto;
+  padding: 50px 0px 50px 0px;
+  border-bottom: 1px ridge;
+  min-height: 200px;
+}
+
+.form-content {
+  margin: 0px auto;
+  padding: 20px 0px 20px 0px;
+  border: 2px ridge;
+  min-height: 200px;
+}
+
+.submit{
+  margin-left: 20px;
+}
+
+button {
+  height: 30px;
+  width: 100px;
+}
+
+footer {
+  margin: 0px auto;
+  padding: 20px 0px 20px 0px;
+  background-color: #D1C4E9;
+}
+
+.jumbotron {
+    padding: 70px 30px 70px 30px;
+    margin: 0px auto;
+    background: #9575CB;
+    color: floralwhite;
+}
+
+address {
+  font-size: 80%;
+  margin: 0px;
+  color: #0f0f0f;
+}
