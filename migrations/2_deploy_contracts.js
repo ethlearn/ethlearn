@@ -1,5 +1,5 @@
-const Sample = artifacts.require("Sample.sol");
+const CourseList = artifacts.require("CourseList.sol");
 
 module.exports = function(deployer) {
-  deployer.deploy(Sample);
+  deployer.deploy(CourseList);
 };

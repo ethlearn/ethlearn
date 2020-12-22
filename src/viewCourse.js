@@ -1,8 +1,16 @@
 window.$ = window.jQuery = jQuery;
 var dataRes = "";
+const queryString = window.location.search;
+console.log(queryString);
+const urlParams = new URLSearchParams(queryString);
+const id = urlParams.get('id')
+console.log(id);
+const courseUrl = "http://localhost:8080/ipfs/"+getCookie("hash"+id)
+console.log(courseUrl);
+console.log(getCookie("hash"+id));
 function displayData() {
 
-  $.getJSON( "http://localhost:8080/ipfs/Qme3yyefSmDMtBgbwSHF2jhCjF7f4brgLuGR5rxkd4yEqR", function( data ) {
+  $.getJSON(courseUrl , function( data ) {
   var items = [];
   //console.log(data);
   dataRes = data;

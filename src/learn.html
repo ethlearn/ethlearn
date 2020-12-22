@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <meta http-equiv="x-ua-compatible" content="ie=edge">
 
-    <link rel="stylesheet" href="vendor/bootstrap/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
   <!--  <link rel="stylesheet" href="css/styles.css">-->
     <link rel="stylesheet" href="nicepage.css" media="screen">
 <link rel="stylesheet" href="Page-4.css" media="screen">
@@ -15,6 +15,7 @@
     <title>EthLearn</title>
     <script class="u-script" type="text/javascript" src="jquery-1.9.1.min.js" defer=""></script>
     <script class="u-script" type="text/javascript" src="nicepage.js" defer=""></script>
+    <script type="text/javascript" src="cookie.js"></script>
     <meta name="generator" content="Nicepage 2.29.7, nicepage.com">
 
 
@@ -77,15 +78,19 @@
     </header>-->
 
     <div class="container">
-        <div class="row row-content align-items-center">
-            <a href="course.html">
-              <div class="col-12 col-sm-6 col-md">
-                <h2>Blockchain</h2>
-                <p>Blockchain technology is a type of distributed ledger technology (DLT) — It is an accounting system where the ledger (record of transactions) is distributed among a network of computers.</p>
-                <p>This network of computers all manage the blockchain together without hierarchy (refer to header image). With such a flat architecture, blockchain networks are often referred to as peer-to-peer networks.</p>
-                <p>First, these computers verify all transactions one by one and add them onto a ‘block’ of information. Then these blocks are added to the blockchain and downloaded onto each computer. In a nutshell, this is how these computers keep the blockchain secure and running.</p>
+      <ul id="items" class="list-unstyled">
+              <!--<div class="card template">
+                <div class="card-body">
+                  <h2 class="card-title title"></h2>
+                  <p class="card-text by"></p>
+                  <form class="link" action="viewCourse.js" method="get">
+                    <input type="hidden" name="" value="">
+                  </form>
+                    <a class="btn btn-primary stretched-link" >View Course</a>
+
               </div>
-            </a>
+        </div>-->
+
         </div>
 
 
@@ -187,7 +192,8 @@
 
 <script src="vendor/jquery/dist/jquery.slim.min.js"></script>
 <script src="vendor/popper.js/dist/umd/popper.min.js"></script>-->
-<script src="vendor/bootstrap/dist/js/bootstrap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 <script src="vendor/truffle-contract/dist/truffle-contract.js"></script>
 
 <script src="app.js"></script>

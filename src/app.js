@@ -6,7 +6,7 @@ App = {
     await App.loadWeb3()
     await App.loadAccount()
     await App.loadContract()
-    await App.render()
+    await App.renderTasks()
   },
 
   // https://medium.com/metamask/https-medium-com-metamask-breaking-change-injecting-web3-7722797916a8
@@ -24,7 +24,7 @@ App = {
         // Request account access if needed
         await ethereum.enable()
         // Acccounts now exposed
-        web3.eth.sendTransaction({/* ... */})
+        //web3.eth.sendTransaction({/* ... */})
       } catch (error) {
         // User denied account access...
       }
@@ -34,7 +34,7 @@ App = {
       App.web3Provider = web3.currentProvider
       window.web3 = new Web3(web3.currentProvider)
       // Acccounts always exposed
-      web3.eth.sendTransaction({/* ... */})
+      //web3.eth.sendTransaction({/* ... */})
     }
     // Non-dapp browsers...
     else {
@@ -48,60 +48,65 @@ App = {
   },
 
   loadContract: async () => {
-    // Create a JavaScript version of the smart contract
-    const sample = await $.getJSON('Sample.json')
-    App.contracts.Sample = TruffleContract(sample)
-    App.contracts.Sample.setProvider(App.web3Provider)
+      // Create a JavaScript version of the smart contract
+      const list = await $.getJSON('CourseList.json')
+      //console.log(list);
+      App.contracts.CourseList = TruffleContract(list)
+      App.contracts.CourseList.setProvider(App.web3Provider)
 
-    App.sample = await App.contracts.Sample.deployed()
-  },
+      App.list = await App.contracts.CourseList.deployed()
+    },
 
-  render: async () => {
-    // Prevent double render
-    if (App.loading) {
-      return
-    }
+  renderTasks: async () => {
+    const courseCount = await App.list.courseCount()
+    //console.log(courseCount);
+    const $newTemplate = $('.template')
+    for (var i = 1; i <= courseCount; i++) {
+      //console.log(i);
+      const course = await App.list.courseDetails(i)
+      const courseId = course[0].toNumber()
+      const courseName = course[1]
+      const offeredBy = course[2]
+      const courseHash = course[3]
 
-    // Update app loading state
-    App.setLoading(true)
+      var card = document.createElement("div")
+      card.classList.add("card")
 
-    // Render Account
-    $('#account').html(App.account)
+      var cardBody = document.createElement("div")
+      cardBody.classList.add("card-body")
 
-    // Update loading state
-    App.setLoading(false)
-  },
+      var title = document.createElement("h2")
+      title.innerHTML = courseName
+      title.classList.add("card-title")
 
-  checkAnswers: async () => {
-    App.setLoading(true)
-    const content = $('#box1').val()
-    const answer = $("input[name=tf]:checked").val()
-    console.log(content);
-    console.log(answer);
-    var result = await App.sample.checkAnswers.call(content, answer)
-    console.log(result);
-    const $status = $('.status')
-    $status.find('.result').html(result)
-  },
-  /*viewResult: async () => {
-    const result = await App.sample.viewResult.call()
-    console.log(result);
-    const $status = $('.status')
-    $status.find('.result').html(result)
-    const mark = await App.sample.totalMarks();
-    console.log(mark);
-  },*/
+      var by = document.createElement("p")
+      by.innerHTML = offeredBy
+      by.classList.add("card-text")
 
-  setLoading: (boolean) => {
-    App.loading = boolean
-    const loader = $('#loader')
-    const content = $('#content')
-    if (boolean) {
-      loader.show()
-      content.hide()
-    } else {
-      loader.hide()
-      content.show()
+      var a = document.createElement("a")
+      a.innerHTML = "View Course"
+      a.classList.add("btn")
+      a.classList.add("btn-primary")
+      a.classList.add("stretched-link")
+      a.href = "course.html?id="+courseId
+
+      cardBody.appendChild(title)
+      cardBody.appendChild(by)
+      cardBody.appendChild(a)
+      card.appendChild(cardBody)
+
+      setCookie("hash"+courseId, courseHash)
+      console.log(getCookie("hash"+courseId));
+      $('#items').append(card)
+
+      /*const $eachTemplate = $newTemplate.clone()
+      $eachTemplate.find('.title').html(courseName)
+      $eachTemplate.find('.by').html(offeredBy)
+      setCookie("hash", courseHash)
+      console.log(getCookie("hash"));
+      $('#items').append($eachTemplate)
+      $eachTemplate.show()*/
+
     }
   }
 }

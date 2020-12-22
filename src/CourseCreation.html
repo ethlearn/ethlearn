@@ -13,6 +13,7 @@
     <script src="https://unpkg.com/ipfs@0.41.0-rc.2/dist/index.min.js"></script>
     <script src="https://unpkg.com/hlsjs-ipfs-loader@0.2.3/dist/index.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+    <script src="vendor/truffle-contract/dist/truffle-contract.js"></script>
     <script src="streaming.js"></script>
   </head>
   <body>
@@ -22,8 +23,8 @@
         <input type="text" placeholder="Course Title" id="title" name="course_title"><br>
         <input type="file" name="photo" id="photo"><br>
         <label id="hash"></label><br>
-        <button type="button" onclick="upload()">Upload</button>
-        <button onclick="myFunction(); return false;">Preview</button>
+        <button type="button" onclick="App.upload();">Upload</button>
+        <button onclick="App.filePreview(); return false;">Preview</button>
     <div style="display: none" id="files">
       <iframe id="pdfFile" width="100%" height="500px">
     </iframe>
@@ -32,10 +33,10 @@
           <legend>Questions</legend>
           <div id="questions">
           </div>
-          <button id="addQ" onclick="addQuestion(); return false;">Add Question</button>
-          <button id="clear" onclick="clearQuestions(); return false;">Clear</button>
+          <button id="addQ" onclick="App.addQuestion(); return false;">Add Question</button>
+          <button id="clear" onclick="App.clearQuestions(); return false;">Clear</button>
         </fieldset>
-        <button onclick="submitCourse(); return false;">Submit Course</button>
+        <button onclick="App.submitCourse(); return false;">Submit Course</button>
       </fieldset>
 
     </form>

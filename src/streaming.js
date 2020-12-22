@@ -1,12 +1,109 @@
-
 window.$ = window.jQuery = jQuery;
-
 var hashRet = "";
 var questionCount = 0;
 var optionCount = 0;
 var optionArray = [];
+var ipfsHash = "";
 const ipfs = window.IpfsApi('localhost', 5001)
-function upload() {
+
+App = {
+  web3Provider: null,
+  contracts: {},
+  account: '0x0',
+  load: async () => {
+    await App.loadWeb3()
+    await App.loadAccount()
+    await App.loadContract()
+    //await App.render()
+  },
+
+  loadWeb3: async () => {
+      if (typeof web3 !== 'undefined') {
+      App.web3Provider = web3.currentProvider
+      web3 = new Web3(web3.currentProvider)
+    } else {
+      window.alert("Please connect to Metamask.")
+    }
+    // Modern dapp browsers...
+    if (window.ethereum) {
+      window.web3 = new Web3(ethereum)
+      try {
+        // Request account access if needed
+        await ethereum.enable()
+        // Acccounts now exposed
+        web3.eth.sendTransaction({/* ... */})
+      } catch (error) {
+        // User denied account access...
+      }
+    }
+    // Legacy dapp browsers...
+    else if (window.web3) {
+      App.web3Provider = web3.currentProvider
+      window.web3 = new Web3(web3.currentProvider)
+      // Acccounts always exposed
+      //web3.eth.sendTransaction({/* ... */})
+    }
+    // Non-dapp browsers...
+    else {
+      console.log('Non-Ethereum browser detected. You should consider trying MetaMask!')
+    }
+  },
+
+  loadAccount: async () => {
+    // Set the current blockchain account
+    web3.eth.getCoinbase(function(err, account) {
+      console.log(account);
+     if (err === null) {
+       console.log("in");
+       App.account = account;
+       //$("#accountAddress").html("Your Account: " + account);
+     }
+     else {
+       console.log(err);
+     }
+   });
+    console.log(App.account);
+  },
+
+  /*  initContract: function() {
+    $.getJSON("CourseList.json", function(courseList) {
+      // Instantiate a new truffle contract from the artifact
+      App.contracts.CourseList = TruffleContract(courseList);
+      // Connect provider to interact with contract
+      App.contracts.CourseList.setProvider(App.web3Provider);
+
+      //App.listenForEvents();
+
+      //return App.render();
+    });
+  },*/
+
+loadContract: async () => {
+    // Create a JavaScript version of the smart contract
+    const list = await $.getJSON('CourseList.json')
+    //console.log(list);
+    App.contracts.CourseList = TruffleContract(list)
+    App.contracts.CourseList.setProvider(App.web3Provider)
+
+    App.list = await App.contracts.CourseList.deployed()
+  },
+
+  filePreview: function() {
+    var x = document.getElementById("files");
+    if (x.style.display === "none") {
+      x.style.display = "block";
+      console.log(hashRet);
+      var pdfFile = document.getElementById("pdfFile");
+      const source = "http://localhost:8080/ipfs/"+hashRet
+      pdfFile.src = source
+
+    } else {
+      x.style.display = "none";
+    }
+  },
+
+
+ upload: function () {
   const reader = new FileReader();
   reader.onloadend = function() {
      // Connect to IPFS
@@ -27,22 +124,9 @@ function upload() {
   }
   const photo = document.getElementById("photo");
   reader.readAsArrayBuffer(photo.files[0]); // Read Provided File
-}
-function myFunction() {
-  var x = document.getElementById("files");
-  if (x.style.display === "none") {
-    x.style.display = "block";
-    console.log(hashRet);
-    var pdfFile = document.getElementById("pdfFile");
-    const source = "http://localhost:8080/ipfs/"+hashRet
-    pdfFile.src = source
+},
 
-  } else {
-    x.style.display = "none";
-  }
-}
-
-function addQuestion() {
+addQuestion: function () {
   questionCount++;
   //console.log(questionCount);
   optionCount = 0;
@@ -64,22 +148,22 @@ function addQuestion() {
   var button = document.createElement("button");
   button.innerHTML = "Add Option";
   button.id = "bq"+questionCount;
-  button.setAttribute("onclick", "addOption(); return false;");
+  button.setAttribute("onclick", "App.addOption(); return false;");
 
   var ansButton = document.createElement("button");
   ansButton.innerHTML = "Add Answer";
   ansButton.id = "ba"+questionCount;
-  ansButton.setAttribute("onclick", "addAnswer(); return false;");
+  ansButton.setAttribute("onclick", "App.addAnswer(); return false;");
 
   var clearButton = document.createElement("button");
   clearButton.innerHTML = "Clear";
   clearButton.id = "bc"+questionCount;
-  clearButton.setAttribute("onclick", "clearOptions(); return false;");
+  clearButton.setAttribute("onclick", "App.clearOptions(); return false;");
 
   var doneButton = document.createElement("button");
   doneButton.innerHTML = "Done";
   doneButton.id = "bc"+questionCount;
-  doneButton.setAttribute("onclick", "done(); return false;");
+  doneButton.setAttribute("onclick", "App.done(); return false;");
 
   //button.onclick = function(){ addOption(questionCount); } ;
   console.log(button.getAttribute("onclick"));
@@ -95,9 +179,9 @@ function addQuestion() {
   optionsDiv.id = "q"+questionCount+"div"
   fieldset.appendChild(optionsDiv);
   document.getElementById("addQ").disabled = true;
-}
+},
 
-function addOption() {
+addOption: function () {
   console.log(questionCount);
   optionCount++;
   var options = document.getElementById("q"+questionCount+"div");
@@ -116,9 +200,9 @@ function addOption() {
   li.appendChild(input);
   ul.appendChild(li);
   options.appendChild(ul);
-}
+},
 
-function addAnswer() {
+addAnswer: function () {
   var input = document.createElement("input");
   var options = document.getElementById("q"+questionCount+"div");
   input.type = "text";
@@ -128,25 +212,25 @@ function addAnswer() {
 
   document.getElementById('ba'+questionCount).disabled = true;
   options.appendChild(input);
-}
+},
 
-function clearOptions() {
+clearOptions: function () {
   var div = document.getElementById("q"+questionCount+"div");
   div.innerHTML = "";
   optionCount = 0;
 
   document.getElementById('ba'+questionCount).disabled = false;
-}
+},
 
-function done() {
+done: function () {
   document.getElementById("addQ").disabled = false;
   document.getElementById("ba"+ questionCount).disabled = true;
   document.getElementById("bq"+ questionCount).disabled = true;
   console.log("oc",optionCount);
   optionArray.push(optionCount);
-}
+},
 
-function submitCourse() {
+submitCourse: function () {
   var obj = $('#form').serializeJSON();
   console.log(questionCount);
   console.log(optionArray);
@@ -168,9 +252,27 @@ function submitCourse() {
     console.log('creating user on eth for',ipfsHash);
     const source = "http://localhost:8080/ipfs/"+ipfsHash
     console.log(source);
+    console.log(obj["course_title"]);
+    console.log(ipfsHash);
+    App.contracts.CourseList.deployed().then(function(instance) {
+        return instance.createCourse(ipfsHash, obj["course_title"], "MCET", {from: App.account});
+      }).then(function(result) {
+        // Wait for votes to update
+        alert("Done");
+      }).catch(function(err) {
+        console.error(err);
+      });
   });
+
+
   //http://localhost:8080/ipfs/QmaLBPiSggsC2xJJc2fFFuzomFSoHz3Fhoe8T13jjLhhxe
 }
+}
+$(() => {
+  $(window).load(() => {
+    App.load()
+  })
+})
 //const MyContract = artifacts.require("MyContract")
 
 /*async function test() {
