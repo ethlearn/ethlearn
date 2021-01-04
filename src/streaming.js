@@ -91,7 +91,6 @@ loadContract: async () => {
 
     App.list = await App.contracts.CourseList.deployed()
   },
-
   filePreview: function() {
     var x = document.getElementById("files");
     if (x.style.display === "none") {
@@ -109,9 +108,11 @@ loadContract: async () => {
 
  upload: function () {
   const reader = new FileReader();
+  console.log(reader);
   reader.onloadend = function() {
      // Connect to IPFS
     const buf = buffer.Buffer(reader.result) // Convert data into buffer
+    console.log(buf);
     ipfs.files.add(buf, (err, result) => { // Upload buffer to IPFS
       if(err) {
         console.error(err)
@@ -126,8 +127,9 @@ loadContract: async () => {
       document.getElementById("hash").disabled = true;
     })
   }
-  const photo = document.getElementById("photo");
+  const photo = document.getElementById("customFile");
   reader.readAsArrayBuffer(photo.files[0]); // Read Provided File
+
 },
 
 addQuestion: function () {
