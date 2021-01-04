@@ -9,8 +9,8 @@
   "scripts": {
     "dev": "lite-server",
     "test": "echo \"Error: no test specified\" && sexit 1",
-    "start" : "npm run lite",
-    "lite" : "lite-server"
+    "start": "npm run lite",
+    "lite": "lite-server"
   },
   "author": "ArvindRaj",
   "license": "ISC",
@@ -23,5 +23,8 @@
     "nodemon": "^1.17.3",
     "truffle": "5.0.2",
     "truffle-contract": "3.0.6"
+  },
+  "dependencies": {
+    "ipfs-api": "^26.1.2"
   }
 }

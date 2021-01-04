@@ -4,7 +4,11 @@ var questionCount = 0;
 var optionCount = 0;
 var optionArray = [];
 var ipfsHash = "";
-const ipfs = window.IpfsApi('localhost', 5001)
+//const ipfs = window.IpfsApi('localhost', 5001)
+const buffer = require('buffer');
+const ipfs = window.IpfsApi({ host: 'ipfs.infura.io', port: 5001, protocol: 'https' });
+//const ipfs = new IPFS({ host: 'localhost', port: 5001, protocol: 'https' });
+//const ipfs = window.IpfsApi({ host: 'localhost', port: 5001, protocol: 'https' });
 
 App = {
   web3Provider: null,
@@ -94,7 +98,7 @@ loadContract: async () => {
       x.style.display = "block";
       console.log(hashRet);
       var pdfFile = document.getElementById("pdfFile");
-      const source = "http://localhost:8080/ipfs/"+hashRet
+      const source = "http://ipfs.io/ipfs/"+hashRet
       pdfFile.src = source
 
     } else {
@@ -132,10 +136,16 @@ addQuestion: function () {
   optionCount = 0;
   var questions = document.getElementById("questions");
 
-  var fieldset = document.createElement("fieldset");
-  fieldset.id = "f"+questionCount;
-  var legend = document.createElement('legend');
-  legend.innerHTML = "Question " + questionCount;
+  var card = document.createElement("div");
+  card.classList.add('card');
+
+  var cardBody = document.createElement('div');
+  cardBody.id = "f"+questionCount;
+  cardBody.classList.add('card-body');
+
+  var cardHeader = document.createElement('div');
+  cardHeader.classList.add('card-header');
+  cardHeader.innerHTML = "Question "+questionCount;
 
   var input = document.createElement("input");
   input.type = "text";
@@ -143,42 +153,71 @@ addQuestion: function () {
   input.name = "Q"+questionCount+"[question]";
   input.placeholder = "Question " + questionCount;
   input.id = "q"+questionCount;
-  console.log(input.getAttribute("id"));
+  input.classList.add('form-control');
+  //console.log(input.getAttribute("id"));
+
+  var bf = document.createElement('div')
+  bf.classList.add('card-footer')
+
+  var br = document.createElement('br')
+
+  var buttonGroup = document.createElement('div')
+  buttonGroup.classList.add('btn-group')
+  buttonGroup.role = "group";
 
   var button = document.createElement("button");
   button.innerHTML = "Add Option";
   button.id = "bq"+questionCount;
+  button.classList.add("btn");
+  button.classList.add("btn-primary");
+  button.classList.add("btn-sm");
   button.setAttribute("onclick", "App.addOption(); return false;");
 
   var ansButton = document.createElement("button");
   ansButton.innerHTML = "Add Answer";
   ansButton.id = "ba"+questionCount;
+  ansButton.classList.add("btn");
+  ansButton.classList.add("btn-primary");
+  ansButton.classList.add("btn-sm");
   ansButton.setAttribute("onclick", "App.addAnswer(); return false;");
 
   var clearButton = document.createElement("button");
   clearButton.innerHTML = "Clear";
   clearButton.id = "bc"+questionCount;
+  clearButton.classList.add("btn");
+  clearButton.classList.add("btn-primary");
+  clearButton.classList.add("btn-sm");
   clearButton.setAttribute("onclick", "App.clearOptions(); return false;");
 
   var doneButton = document.createElement("button");
   doneButton.innerHTML = "Done";
-  doneButton.id = "bc"+questionCount;
+  doneButton.disabled = true;
+  doneButton.id = "bd"+questionCount;
+  doneButton.classList.add("btn");
+  doneButton.classList.add("btn-primary");
+  doneButton.classList.add("btn-sm");
   doneButton.setAttribute("onclick", "App.done(); return false;");
 
   //button.onclick = function(){ addOption(questionCount); } ;
-  console.log(button.getAttribute("onclick"));
-  fieldset.appendChild(input);
-  fieldset.appendChild(button);
-  fieldset.appendChild(ansButton);
-  fieldset.appendChild(clearButton);
-  fieldset.appendChild(doneButton);
-  fieldset.appendChild(legend);
-  questions.appendChild(fieldset);
+  //console.log(button.getAttribute("onclick"));
 
   var optionsDiv = document.createElement("div");
   optionsDiv.id = "q"+questionCount+"div"
-  fieldset.appendChild(optionsDiv);
   document.getElementById("addQ").disabled = true;
+
+
+  cardBody.appendChild(input);
+  cardBody.appendChild(br);
+  cardBody.appendChild(optionsDiv);
+  buttonGroup.appendChild(button);
+  buttonGroup.appendChild(ansButton);
+  buttonGroup.appendChild(clearButton);
+  buttonGroup.appendChild(doneButton);
+  bf.appendChild(buttonGroup);
+  card.appendChild(cardHeader);
+  card.appendChild(cardBody);
+  card.appendChild(bf);
+  questions.appendChild(card);
 },
 
 addOption: function () {
@@ -191,6 +230,7 @@ addOption: function () {
   input.name = "Q"+questionCount+"[Option[" + optionCount+"]]";
   //input.name = "Option" + optionCount;
   input.id = "o"+optionCount;
+  input.classList.add('form-control');
 
   var ul = document.createElement("ul");
   var li = document.createElement("li");
@@ -208,9 +248,11 @@ addAnswer: function () {
   input.type = "text";
   input.placeholder = "Answer " + questionCount;
   input.name = "Q"+questionCount+"[Answer]";
+  input.classList.add('form-control');
   input.id = "a" + questionCount;
 
   document.getElementById('ba'+questionCount).disabled = true;
+  document.getElementById('bd'+questionCount).disabled = false;
   options.appendChild(input);
 },
 
