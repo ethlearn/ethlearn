@@ -1,3 +1,5 @@
+const TruffleContract = require('truffle-contract')
+
 App = {
   loading: false,
   contracts: {},

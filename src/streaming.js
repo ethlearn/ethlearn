@@ -9,7 +9,6 @@ const buffer = require('buffer');
 const ipfs = window.IpfsApi({ host: 'ipfs.infura.io', port: 5001, protocol: 'https' });
 //const ipfs = new IPFS({ host: 'localhost', port: 5001, protocol: 'https' });
 //const ipfs = window.IpfsApi({ host: 'localhost', port: 5001, protocol: 'https' });
-
 App = {
   web3Provider: null,
   contracts: {},
@@ -97,7 +96,7 @@ loadContract: async () => {
       x.style.display = "block";
       console.log(hashRet);
       var pdfFile = document.getElementById("pdfFile");
-      const source = "http://ipfs.io/ipfs/"+hashRet
+      const source = "https://ipfs.io/ipfs/"+hashRet
       pdfFile.src = source
 
     } else {
@@ -294,7 +293,7 @@ submitCourse: function () {
     ipfsHash = res[0].hash
 
     console.log('creating user on eth for',ipfsHash);
-    const source = "http://localhost:8080/ipfs/"+ipfsHash
+    const source = "https://ipfs.io/ipfs/"+ipfsHash
     console.log(source);
     console.log(obj["course_title"]);
     console.log(ipfsHash);
