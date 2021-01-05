@@ -51,7 +51,7 @@ App = {
 
   loadContract: async () => {
       // Create a JavaScript version of the smart contract
-      const list = await $.getJSON('CourseList.json')
+      const list = await $.getJSON('/build/contracts/CourseList.json')
       //console.log(list);
       App.contracts.CourseList = TruffleContract(list)
       App.contracts.CourseList.setProvider(App.web3Provider)
