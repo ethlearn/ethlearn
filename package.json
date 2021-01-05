@@ -8,9 +8,7 @@
   },
   "scripts": {
     "dev": "lite-server",
-    "test": "echo \"Error: no test specified\" && sexit 1",
-    "start": "npm run lite",
-    "lite": "lite-server"
+    "test": "echo \"Error: no test specified\" && sexit 1"
   },
   "author": "ArvindRaj",
   "license": "ISC",

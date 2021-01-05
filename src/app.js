@@ -1,5 +1,4 @@
-const TruffleContract = require('truffle-contract')
-
+const TruffleContract = require('truffle-contract');
 App = {
   loading: false,
   contracts: {},
@@ -51,16 +50,27 @@ App = {
 
   loadContract: async () => {
       // Create a JavaScript version of the smart contract
-      const list = await $.getJSON('CourseList.json')
+      const list = await $.getJSON('/build/contracts/CourseList.json')
       //console.log(list);
       App.contracts.CourseList = TruffleContract(list)
       App.contracts.CourseList.setProvider(App.web3Provider)
 
       App.list = await App.contracts.CourseList.deployed()
+      /*contract = web3.eth.contract('"[{"constant":false,"inputs":[{"name":"index","type":"uint256"}],"name":"getCourse","outputs":[{"name":"","type":"uint256"},{"name":"","type":"string"},{"name":"","type":"string"},{"name":"","type":"string"}],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[],"name":"courseCount","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"name":"hash","type":"string"},{"name":"name","type":"string"},{"name":"by","type":"string"}],"name":"createCourse","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":false,"inputs":[],"name":"getCourseCount","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[{"name":"","type":"uint256"}],"name":"courseDetails","outputs":[{"name":"courseId","type":"uint256"},{"name":"courseName","type":"string"},{"name":"offeredBy","type":"string"},{"name":"courseHash","type":"string"}],"payable":false,"stateMutability":"view","type":"function"}]"', '0xDcC65a39d6FAf163D0409294F6008D596Db5091B');
+
+      //contract.setProvider(App.web3Provider);
+      //console.log(contract);
+
+      //App.list = await contract.deploy()*/
+
+
     },
 
   renderTasks: async () => {
-    const courseCount = await App.list.courseCount()
+    /*contract.methods.getCourseCount().call({from : App.account}, function(error, res){
+      console.log(result);
+    });*/
+    const courseCount = App.list.courseCount()
     //console.log(courseCount);
     const $newTemplate = $('.template')
     for (var i = 1; i <= courseCount; i++) {
