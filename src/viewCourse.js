@@ -24,8 +24,8 @@ function displayData() {
     console.log(i);
     var d = "Q"+i;
     console.log(d);
-    //console.log(data[d].question);
-    //console.log(data[d].option);
+    console.log(data[d].question);
+    console.log(data[d].optionCount);
     var li = document.createElement("li");
     li.innerHTML = data[d].question;
     var ul = document.createElement("ul");
@@ -36,17 +36,22 @@ function displayData() {
       console.log("j", j);
       var l = document.createElement("li");
       //l.innerHTML = data[d].Option[i]
+      var div = document.createElement("div");
+      div.classList.add('form-check');
       var input = document.createElement("input");
       input.type = "radio";
       input.name = "Q"+i;
       input.value = data[d].Option[j];
       input.id = "o"+j;
+      input.classList.add('form-check-input')
 
       var label = document.createElement("label");
       label.for = "o"+j;
+      label.classList.add('form-check-label')
       label.innerHTML = data[d].Option[j];
-      l.appendChild(input);
-      l.appendChild(label);
+      div.appendChild(input);
+      div.appendChild(label);
+      l.appendChild(div);
       ul.appendChild(l);
     }
     ol.appendChild(li);

@@ -82,13 +82,24 @@ App = {
   },*/
 
 loadContract: async () => {
-    // Create a JavaScript version of the smart contract
+    /*
+use for local deploy
+    Create a JavaScript version of the smart contract
     const list = await $.getJSON('CourseList.json')
     //console.log(list);
     App.contracts.CourseList = TruffleContract(list)
     App.contracts.CourseList.setProvider(App.web3Provider)
 
-    App.list = await App.contracts.CourseList.deployed()
+    App.list = await App.contracts.CourseList.deployed()*/
+
+    //use for test network deploy
+    var courselistContract =  web3.eth.contract([{"constant":true,"inputs":[],"name":"courseCount","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[{"internalType":"uint256","name":"","type":"uint256"}],"name":"courseDetails","outputs":[{"internalType":"uint256","name":"courseId","type":"uint256"},{"internalType":"string","name":"courseName","type":"string"},{"internalType":"string","name":"offeredBy","type":"string"},{"internalType":"string","name":"courseHash","type":"string"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"internalType":"string","name":"hash","type":"string"},{"internalType":"string","name":"name","type":"string"},{"internalType":"string","name":"by","type":"string"}],"name":"createCourse","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":false,"inputs":[{"internalType":"uint256","name":"index","type":"uint256"}],"name":"getCourse","outputs":[{"internalType":"uint256","name":"","type":"uint256"},{"internalType":"string","name":"","type":"string"},{"internalType":"string","name":"","type":"string"},{"internalType":"string","name":"","type":"string"}],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":false,"inputs":[],"name":"getCourseCount","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"payable":false,"stateMutability":"nonpayable","type":"function"}]);
+    //console.log(web3.version);
+
+    CourseList = courselistContract.at('0xDcC65a39d6FAf163D0409294F6008D596Db5091B');
+
+    //console.log(CourseList);
+
   },
   filePreview: function() {
     var x = document.getElementById("files");
@@ -279,12 +290,11 @@ submitCourse: function () {
   console.log(optionArray);
   obj["questionCount"] = questionCount;
   obj["file_hash"] = hashRet;
-  for (var i = 1; i <= questionCount; i++) {
-    var d = "Q"+i;
-    for (var j = 0; j < optionArray.length; j++) {
-      obj[d]["optionCount"] = optionArray[j];
+    for (var j = 1; j <= optionArray.length; j++) {
+      var d = "Q"+j;
+      obj[d]["optionCount"] = optionArray[j-1];
+      console.log('objc',obj[d]["optionCount"]);
     }
-  }
   console.log('obj', obj);
   var jsonString = JSON.stringify(obj);
   console.log('jsonString', jsonString);
@@ -297,7 +307,12 @@ submitCourse: function () {
     console.log(source);
     console.log(obj["course_title"]);
     console.log(ipfsHash);
-    App.contracts.CourseList.deployed().then(function(instance) {
+    CourseList.createCourse(ipfsHash, obj["course_title"], "MCET", {from: App.account}, function(error, res){
+      if (!error) {
+        alert("Course Created")
+      }
+    });
+    /*App.contracts.CourseList.deployed().then(function(instance) {
         return instance.createCourse(ipfsHash, obj["course_title"], "MCET", {from: App.account});
       }).then(function(result) {
         // Wait for votes to update
@@ -305,7 +320,8 @@ submitCourse: function () {
       }).catch(function(err) {
         console.error(err);
       });
-  });
+  });*/
+
 
 
   //http://localhost:8080/ipfs/QmaLBPiSggsC2xJJc2fFFuzomFSoHz3Fhoe8T13jjLhhxe
