@@ -319,8 +319,8 @@ submitCourse: function () {
         alert("Done");
       }).catch(function(err) {
         console.error(err);
-      });
-  });*/
+      });*/
+  });
 
 
 

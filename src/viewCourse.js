@@ -5,7 +5,7 @@ console.log(queryString);
 const urlParams = new URLSearchParams(queryString);
 const id = urlParams.get('id')
 console.log(id);
-const courseUrl = "http://ipfs.io/ipfs/"+getCookie("hash"+id)
+const courseUrl = "https://ipfs.io/ipfs/"+getCookie("hash"+id)
 console.log(courseUrl);
 console.log(getCookie("hash"+id));
 function displayData() {
@@ -17,7 +17,7 @@ function displayData() {
   //console.log(dataRes);
   var result = document.getElementById("questionsResult");
   document.getElementById("cTitle").innerHTML = data.course_title;
-  var url = "http://ipfs.io/ipfs/"+ data.file_hash
+  var url = "https://ipfs.io/ipfs/"+ data.file_hash
   document.getElementById("pdfFile").src = url;
   var ol = document.createElement("ol");
   for (var i = 1; i <= data.questionCount; i++) {
