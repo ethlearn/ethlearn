@@ -190,8 +190,8 @@ App = {
     // Create a JavaScript version of the smart contract
 
     //Use for local deploy
-    const user = await $.getJSON('UserContract.json')
-    const list = await $.getJSON('CourseList.json')
+    //const user = await $.getJSON('UserContract.json')
+    //const list = await $.getJSON('CourseList.json')
     /*console.log(user);
     App.contracts.UserContract = TruffleContract(user)
     App.contracts.UserContract.setProvider(App.web3Provider)

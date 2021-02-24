@@ -44,7 +44,7 @@ App = {
 
     //use for local deploy
 
-    const list = await $.getJSON('CourseList.json')
+    //    const list = await $.getJSON('CourseList.json')
     //console.log(list);
     /*App.contracts.CourseList = TruffleContract(list)
     App.contracts.CourseList.setProvider(App.web3Provider)
@@ -411,7 +411,7 @@ App = {
   submitCourse: function() {
     $('#submit').html('<span class="spinner-border spinner-border-sm mr-2" role="status" aria-hidden="true"></span>Loading...')
       .attr('disabled', true);
-    /*var obj = $('#form').serializeJSON();
+    var obj = $('#form').serializeJSON();
     console.log(questionCount);
     console.log(optionArray);
     obj["questionCount"] = questionCount;
@@ -432,13 +432,13 @@ App = {
       const source = "https://ipfs.io/ipfs/" + ipfsHash
       console.log(source);
       console.log(obj["course_title"]);
-      console.log(ipfsHash);*/
-    signerT.createCourse("QmcwST2fhBkCHYAZVMEYTEacEHG3uJYaNr6HCCKPua9KVk", "Blockchain", name, App.account.toString()).catch(function(error) {
-      if (!error) {
-        $('#upload').html('Upload').attr('disabled', false);
-        alert("Course Created")
-      }
-      //})
+      console.log(ipfsHash);
+      signerT.createCourse("QmcwST2fhBkCHYAZVMEYTEacEHG3uJYaNr6HCCKPua9KVk", "Blockchain", name, App.account.toString()).catch(function(error) {
+        if (!error) {
+          $('#upload').html('Upload').attr('disabled', false);
+          alert("Course Created")
+        }
+      })
       //http://localhost:8080/ipfs/QmaLBPiSggsC2xJJc2fFFuzomFSoHz3Fhoe8T13jjLhhxe
     })
   }
