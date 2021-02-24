@@ -1,42 +1,168 @@
 <!DOCTYPE html>
 <html lang="en" dir="ltr">
-  <head>
-      <meta charset="utf-8">
-      <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-      <meta http-equiv="x-ua-compatible" content="ie=edge">
 
-      <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-    <!--  <link rel="stylesheet" href="css/styles.css">-->
-    <title>EthLearn</title>
-      <script class="u-script" type="text/javascript" src="jquery-1.9.1.min.js" defer=""></script>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+  <!--  <link rel="stylesheet" href="css/styles.css">-->
+  <title>EthLearn</title>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+  <script class="u-script" type="text/javascript" src="jquery-1.9.1.min.js" defer=""></script>
+  <script src="https://unpkg.com/@metamask/detect-provider/dist/detect-provider.min.js"></script>
+  <script type="text/javascript" src="web3.js"></script>
+  <script src="https://unpkg.com/ipfs-api@9.0.0/dist/index.js" integrity="sha384-5bXRcW9kyxxnSMbOoHzraqa7Z0PQWIao+cgeg327zit1hz5LZCEbIMx/LWKPReuB" crossorigin="anonymous"></script>
+
+  <script src="https://cdn.ethers.io/lib/ethers-5.0.umd.min.js" type="application/javascript"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@metamask/onboarding@1.0.0/dist/metamask-onboarding.bundle.js"></script>
 
 
-<style media="screen">
+  <script type="text/javascript" src="jquery.serializejson.js"></script>
+  <script type="text/javascript" src="bundle.js"></script>
+  <script type="text/javascript" src="account.js"></script>
 
-.title{
-  color: #435df8;
-  margin: auto;
-}
-</style>
+  <style media="screen">
+    #name {
+      width: 100%;
+      text-align: center;
+      color: white;
+      font-size: 24px;
+      line-height: 50px;
+    }
 
-  </head>
-  <body>
+    .title {
+      color: #435df8;
+      margin: auto;
+    }
 
-    <header >
-                    <nav class="navbar navbar-expand-sm bg-light navbar-light">
-                 <a class="navbar-brand" href="#">
-                  <img src="images/logo_ethlearn.png" alt="Logo" style="width:100px;">
-                </a>
-                        <h1 class="title">EthLearn</h1>
-              </nav>
-      </header>
-    <div class="container">
-      <div class="row row-content align-items-center">
-              <div class="col-12 col-sm-4 col-md-3">
-                <button class="btn btn-primary" type="button" name="button" onclick="window.location.href='CourseCreation.html';">Add Course</button>
+    .box {
+      padding: 20px;
+      height: 500px;
+      padding: 20px, 0, 20px, 0;
+    }
+
+    .row-content {
+      margin: 0px auto;
+      padding: 50px 0px 50px 0px;
+      border-bottom: 1px ridge;
+      min-height: 200px;
+    }
+
+    .card {
+      margin-top: 10px;
+    }
+
+    .cardmain {
+      margin: 0px 10px 20px 10px;
+    }
+
+    .form-control {
+      display: block;
+      width: 100%;
+      height: 34px;
+      padding: 6px 12px;
+      font-size: 14px;
+      line-height: 1.42857143;
+      color: #555;
+      background-color: #fff;
+      background-image: none;
+      border: 1px solid #ccc;
+      border-radius: 2px;
+      -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
+      box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
+      -webkit-transition: border-color ease-in-out .15s, -webkit-box-shadow ease-in-out .15s;
+      -o-transition: border-color ease-in-out .15s, box-shadow ease-in-out .15s;
+      transition: border-color ease-in-out .15s, box-shadow ease-in-out .15s;
+    }
+
+
+    ::-webkit-file-upload-button {
+      color: white;
+      background-color: #0000FF;
+      font-family: 'Lato', sans-serif;
+      border: 0;
+      border-radius: 5px;
+      line-height: 32px;
+      text-align: center;
+      vertical-align: middle;
+      cursor: pointer;
+      white-space: nowrap;
+      padding: 0 12px;
+    }
+
+    /* for poor sods using IE */
+    ::-ms-browse {
+      color: white;
+      background-color: #0000FF;
+      font-family: 'Lato', sans-serif;
+      border: 0;
+      border-radius: 5px;
+      line-height: 32px;
+      text-align: center;
+      vertical-align: middle;
+      cursor: pointer;
+      white-space: nowrap;
+      padding: 0 12px;
+    }
+  </style>
+
+</head>
+
+<body>
+
+  <header>
+    <nav class="navbar navbar-expand-sm bg-light navbar-light">
+      <a class="navbar-brand" href="#">
+        <img src="images/logo_ethlearn.png" alt="Logo" style="width:100px;">
+      </a>
+      <h1 class="title">EthLearn</h1>
+      <a href="learn.html" id="details">
+        <div class="profile">
+          <div id="imgContainer">
+          </div>
+          <div style="float: left; text-align: right; margin-right:10px">
+            <label id="userName" for="imgContainer">Name</label><br>
+            <label id="accountHash" for="imgContainer">Account</label>
+          </div>
+
+        </div>
+      </a>
+    </nav>
+  </header>
+  <div class="container">
+    <div class="row">
+      <div class="col-3 card box">
+        <div class="nav flex-column nav-pills" id="v-pills-tab" role="tablist" aria-orientation="vertical">
+          <a class="nav-link active" id="v-pills-profile-tab" data-toggle="pill" href="#v-pills-profile" role="tab" aria-controls="v-pills-profile" aria-selected="true">Profile</a>
+          <a class="nav-link" id="v-pills-mycourses-tab" data-toggle="pill" href="#v-pills-mycourses" role="tab" aria-controls="v-pills-mycourses" aria-selected="false">My Courses</a>
+          <a class="nav-link" id="createCourse" role="tab" aria-selected="false">Create Course</a>
+        </div>
+      </div>
+      <div class="col-9 card box">
+        <div class="tab-content" id="v-pills-tabContent">
+          <div class="tab-pane fade show active" id="v-pills-profile" role="tabpanel" aria-labelledby="v-pills-profile-tab">
+            <!--<p>Please Connect to Metamask to view Courses.</p>-->
+            <div id="profile">
+              <div class="card">
+                <div class="card-body">
+                  <h4 id="title" class="card-title">Name</h4>
+                  <p id="account" class="card-text">sdfvshgsdgfy</p>
+                  <p id="noCourses" class="card-text">No of Courses: </p>
+                </div>
               </div>
-       </div>
+            </div>
+          </div>
+          <div class="tab-pane fade" id="v-pills-mycourses" role="tabpanel" aria-labelledby="v-pills-mycourses-tab">
+            <p>Your Courses will be listed here.</p>
+            <ul id="myCourses" class="list-unstyled">
+            </ul>
+          </div>
+        </div>
+      </div>
     </div>
+  </div>
 
   <!--  <footer class="container">
       <div class="row">
@@ -106,22 +232,11 @@
           </div>
      </div>
   </div>
-</footer>utube.com/">YouTube</a>
-                  <a href="mailto:">Mail</a>
-              </div>
-          </div>
-     </div>
-     <div class="row justify-content-center">
-          <div class="col-auto">
-              <p>© Copyright 2018 Ristorante Con Fusion</p>
-          </div>
-     </div>
-  </div>
 </footer>-->
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
-<!-- jQuery first, then Popper.js, then Bootstrap JS.
 
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 
+</body>
 
-  </body>
 </html>

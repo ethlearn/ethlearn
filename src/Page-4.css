@@ -9,9 +9,16 @@
   border-bottom: 1px ridge;
   min-height: 200px;
 }
-
-.title {
-  color: blue;
+.profile{
+  float: right;
+  margin-top: 25px;
+}
+#name {
+  width: 100%;
+  text-align: center;
+  color: white;
+  font-size: 24px;
+  line-height: 50px;
 }
 
 .form-content {
@@ -25,10 +32,6 @@
   margin-left: 20px;
 }
 
-button {
-  height: 30px;
-  width: 100px;
-}
 
 footer {
   margin: 0px auto;

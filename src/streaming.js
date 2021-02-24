@@ -1,103 +1,225 @@
 window.$ = window.jQuery = jQuery;
+const queryString = window.location.search;
+console.log(queryString);
+const urlParams = new URLSearchParams(queryString);
+const name = urlParams.get('name')
 var hashRet = "";
 var questionCount = 0;
 var optionCount = 0;
 var optionArray = [];
 var ipfsHash = "";
+var signerT = "";
 //const ipfs = window.IpfsApi('localhost', 5001)
 const buffer = require('buffer');
-const ipfs = window.IpfsApi({ host: 'ipfs.infura.io', port: 5001, protocol: 'https' });
+const ipfs = window.IpfsApi({
+  host: 'ipfs.infura.io',
+  port: 5001,
+  protocol: 'https'
+});
 //const ipfs = new IPFS({ host: 'localhost', port: 5001, protocol: 'https' });
 //const ipfs = window.IpfsApi({ host: 'localhost', port: 5001, protocol: 'https' });
 App = {
-  web3Provider: null,
+  Provider: null,
   contracts: {},
   account: '0x0',
   load: async () => {
-    await App.loadWeb3()
+    App.Provider = await getProvider()
+    App.account = await getAccount()
     await App.loadAccount()
     await App.loadContract()
     //await App.render()
   },
 
-  loadWeb3: async () => {
-      if (typeof web3 !== 'undefined') {
-      App.web3Provider = web3.currentProvider
-      web3 = new Web3(web3.currentProvider)
-    } else {
-      window.alert("Please connect to Metamask.")
-    }
-    // Modern dapp browsers...
-    if (window.ethereum) {
-      window.web3 = new Web3(ethereum)
-      try {
-        // Request account access if needed
-        await ethereum.enable()
-        // Acccounts now exposed
-        web3.eth.sendTransaction({/* ... */})
-      } catch (error) {
-        // User denied account access...
-      }
-    }
-    // Legacy dapp browsers...
-    else if (window.web3) {
-      App.web3Provider = web3.currentProvider
-      window.web3 = new Web3(web3.currentProvider)
-      // Acccounts always exposed
-      //web3.eth.sendTransaction({/* ... */})
-    }
-    // Non-dapp browsers...
-    else {
-      console.log('Non-Ethereum browser detected. You should consider trying MetaMask!')
-    }
-  },
-
   loadAccount: async () => {
-    // Set the current blockchain account
-    web3.eth.getCoinbase(function(err, account) {
-      console.log(account);
-     if (err === null) {
-       console.log("in");
-       App.account = account;
-       //$("#accountAddress").html("Your Account: " + account);
-     }
-     else {
-       console.log(err);
-     }
-   });
-    console.log(App.account);
+    document.getElementById('userName').innerHTML = name;
+    document.getElementById('accountHash').innerHTML = App.account;
+    window.ethereum.on('accountsChanged', function(accounts) {
+      console.log(accounts);
+      window.location.reload()
+      App.account = accounts[0];
+    })
   },
 
-  /*  initContract: function() {
-    $.getJSON("CourseList.json", function(courseList) {
-      // Instantiate a new truffle contract from the artifact
-      App.contracts.CourseList = TruffleContract(courseList);
-      // Connect provider to interact with contract
-      App.contracts.CourseList.setProvider(App.web3Provider);
+  loadContract: async () => {
 
-      //App.listenForEvents();
+    //use for local deploy
 
-      //return App.render();
-    });
-  },*/
-
-loadContract: async () => {
-    /*
-use for local deploy
-    Create a JavaScript version of the smart contract
     const list = await $.getJSON('CourseList.json')
     //console.log(list);
-    App.contracts.CourseList = TruffleContract(list)
+    /*App.contracts.CourseList = TruffleContract(list)
     App.contracts.CourseList.setProvider(App.web3Provider)
 
     App.list = await App.contracts.CourseList.deployed()*/
 
     //use for test network deploy
-    var courselistContract =  web3.eth.contract([{"constant":true,"inputs":[],"name":"courseCount","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[{"internalType":"uint256","name":"","type":"uint256"}],"name":"courseDetails","outputs":[{"internalType":"uint256","name":"courseId","type":"uint256"},{"internalType":"string","name":"courseName","type":"string"},{"internalType":"string","name":"offeredBy","type":"string"},{"internalType":"string","name":"courseHash","type":"string"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"internalType":"string","name":"hash","type":"string"},{"internalType":"string","name":"name","type":"string"},{"internalType":"string","name":"by","type":"string"}],"name":"createCourse","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":false,"inputs":[{"internalType":"uint256","name":"index","type":"uint256"}],"name":"getCourse","outputs":[{"internalType":"uint256","name":"","type":"uint256"},{"internalType":"string","name":"","type":"string"},{"internalType":"string","name":"","type":"string"},{"internalType":"string","name":"","type":"string"}],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":false,"inputs":[],"name":"getCourseCount","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"payable":false,"stateMutability":"nonpayable","type":"function"}]);
+
+    const provider = new ethers.providers.Web3Provider(App.Provider)
+    const signer = provider.getSigner()
+    console.log(signer);
+
+    var courseAbi = [{
+        "constant": true,
+        "inputs": [],
+        "name": "courseCount",
+        "outputs": [{
+          "name": "",
+          "type": "uint256"
+        }],
+        "payable": false,
+        "stateMutability": "view",
+        "type": "function",
+        "signature": "0x66055159"
+      },
+      {
+        "constant": true,
+        "inputs": [{
+          "name": "",
+          "type": "uint256"
+        }],
+        "name": "courseDetails",
+        "outputs": [{
+            "name": "courseId",
+            "type": "uint256"
+          },
+          {
+            "name": "courseName",
+            "type": "string"
+          },
+          {
+            "name": "offeredBy",
+            "type": "string"
+          },
+          {
+            "name": "courseHash",
+            "type": "string"
+          }
+        ],
+        "payable": false,
+        "stateMutability": "view",
+        "type": "function",
+        "signature": "0xd1be5309"
+      },
+      {
+        "inputs": [{
+          "name": "_userContractAddress",
+          "type": "address"
+        }],
+        "payable": false,
+        "stateMutability": "nonpayable",
+        "type": "constructor",
+        "signature": "constructor"
+      },
+      {
+        "constant": false,
+        "inputs": [{
+            "name": "hash",
+            "type": "string"
+          },
+          {
+            "name": "name",
+            "type": "string"
+          },
+          {
+            "name": "by",
+            "type": "string"
+          },
+          {
+            "name": "_institutionHash",
+            "type": "address"
+          }
+        ],
+        "name": "createCourse",
+        "outputs": [],
+        "payable": false,
+        "stateMutability": "nonpayable",
+        "type": "function",
+        "signature": "0x64395a1b"
+      },
+      {
+        "constant": true,
+        "inputs": [],
+        "name": "getCourseCount",
+        "outputs": [{
+          "name": "",
+          "type": "uint256"
+        }],
+        "payable": false,
+        "stateMutability": "view",
+        "type": "function",
+        "signature": "0x96cfda06"
+      },
+      {
+        "constant": false,
+        "inputs": [{
+            "name": "_courseId",
+            "type": "uint256"
+          },
+          {
+            "name": "_userId",
+            "type": "uint256"
+          },
+          {
+            "name": "_registerAccount",
+            "type": "address"
+          }
+        ],
+        "name": "registerCourse",
+        "outputs": [],
+        "payable": false,
+        "stateMutability": "nonpayable",
+        "type": "function",
+        "signature": "0xaa77db46"
+      },
+      {
+        "constant": true,
+        "inputs": [{
+          "name": "index",
+          "type": "uint256"
+        }],
+        "name": "getCourse",
+        "outputs": [{
+            "name": "",
+            "type": "uint256"
+          },
+          {
+            "name": "",
+            "type": "string"
+          },
+          {
+            "name": "",
+            "type": "string"
+          },
+          {
+            "name": "",
+            "type": "string"
+          }
+        ],
+        "payable": false,
+        "stateMutability": "view",
+        "type": "function",
+        "signature": "0x0b91e28d"
+      },
+      {
+        "constant": true,
+        "inputs": [{
+          "name": "id",
+          "type": "uint256"
+        }],
+        "name": "getStudentList",
+        "outputs": [{
+          "name": "",
+          "type": "uint256[]"
+        }],
+        "payable": false,
+        "stateMutability": "view",
+        "type": "function",
+        "signature": "0xe5a43d87"
+      }
+    ]
     //console.log(web3.version);
 
-    CourseList = courselistContract.at('0xDcC65a39d6FAf163D0409294F6008D596Db5091B');
-
+    CourseList = new ethers.Contract('0xd2370aa2fABb6A3Cafa2e32C2618556800C6D0ae', courseAbi, provider);
+    signerT = CourseList.connect(signer)
     //console.log(CourseList);
 
   },
@@ -107,7 +229,7 @@ use for local deploy
       x.style.display = "block";
       console.log(hashRet);
       var pdfFile = document.getElementById("pdfFile");
-      const source = "https://ipfs.io/ipfs/"+hashRet
+      const source = "https://ipfs.io/ipfs/" + hashRet
       pdfFile.src = source
 
     } else {
@@ -115,218 +237,213 @@ use for local deploy
     }
   },
 
-
- upload: function () {
-  const reader = new FileReader();
-  console.log(reader);
-  reader.onloadend = function() {
-     // Connect to IPFS
-    const buf = buffer.Buffer(reader.result) // Convert data into buffer
-    console.log(buf);
-    ipfs.files.add(buf, (err, result) => { // Upload buffer to IPFS
-      if(err) {
-        console.error(err)
-        return
-      }
-      alert("File Uploaded");
-      let url = `https://ipfs.io/ipfs/${result[0].hash}`
-      console.log(result[0].hash)
-      hashRet = result[0].hash
-      console.log(`Url --> ${url}`)
-      document.getElementById("hash").placeholder = hashRet;
-      document.getElementById("hash").disabled = true;
-    })
-  }
-  const photo = document.getElementById("customFile");
-  reader.readAsArrayBuffer(photo.files[0]); // Read Provided File
-
-},
-
-addQuestion: function () {
-  questionCount++;
-  //console.log(questionCount);
-  optionCount = 0;
-  var questions = document.getElementById("questions");
-
-  var card = document.createElement("div");
-  card.classList.add('card');
-
-  var cardBody = document.createElement('div');
-  cardBody.id = "f"+questionCount;
-  cardBody.classList.add('card-body');
-
-  var cardHeader = document.createElement('div');
-  cardHeader.classList.add('card-header');
-  cardHeader.innerHTML = "Question "+questionCount;
-
-  var input = document.createElement("input");
-  input.type = "text";
-  //input.name = "Question" + questionCount;
-  input.name = "Q"+questionCount+"[question]";
-  input.placeholder = "Question " + questionCount;
-  input.id = "q"+questionCount;
-  input.classList.add('form-control');
-  //console.log(input.getAttribute("id"));
-
-  var bf = document.createElement('div')
-  bf.classList.add('card-footer')
-
-  var br = document.createElement('br')
-
-  var buttonGroup = document.createElement('div')
-  buttonGroup.classList.add('btn-group')
-  buttonGroup.role = "group";
-
-  var button = document.createElement("button");
-  button.innerHTML = "Add Option";
-  button.id = "bq"+questionCount;
-  button.classList.add("btn");
-  button.classList.add("btn-primary");
-  button.classList.add("btn-sm");
-  button.setAttribute("onclick", "App.addOption(); return false;");
-
-  var ansButton = document.createElement("button");
-  ansButton.innerHTML = "Add Answer";
-  ansButton.id = "ba"+questionCount;
-  ansButton.classList.add("btn");
-  ansButton.classList.add("btn-primary");
-  ansButton.classList.add("btn-sm");
-  ansButton.setAttribute("onclick", "App.addAnswer(); return false;");
-
-  var clearButton = document.createElement("button");
-  clearButton.innerHTML = "Clear";
-  clearButton.id = "bc"+questionCount;
-  clearButton.classList.add("btn");
-  clearButton.classList.add("btn-primary");
-  clearButton.classList.add("btn-sm");
-  clearButton.setAttribute("onclick", "App.clearOptions(); return false;");
-
-  var doneButton = document.createElement("button");
-  doneButton.innerHTML = "Done";
-  doneButton.disabled = true;
-  doneButton.id = "bd"+questionCount;
-  doneButton.classList.add("btn");
-  doneButton.classList.add("btn-primary");
-  doneButton.classList.add("btn-sm");
-  doneButton.setAttribute("onclick", "App.done(); return false;");
-
-  //button.onclick = function(){ addOption(questionCount); } ;
-  //console.log(button.getAttribute("onclick"));
-
-  var optionsDiv = document.createElement("div");
-  optionsDiv.id = "q"+questionCount+"div"
-  document.getElementById("addQ").disabled = true;
-
-
-  cardBody.appendChild(input);
-  cardBody.appendChild(br);
-  cardBody.appendChild(optionsDiv);
-  buttonGroup.appendChild(button);
-  buttonGroup.appendChild(ansButton);
-  buttonGroup.appendChild(clearButton);
-  buttonGroup.appendChild(doneButton);
-  bf.appendChild(buttonGroup);
-  card.appendChild(cardHeader);
-  card.appendChild(cardBody);
-  card.appendChild(bf);
-  questions.appendChild(card);
-},
-
-addOption: function () {
-  console.log(questionCount);
-  optionCount++;
-  var options = document.getElementById("q"+questionCount+"div");
-  var input = document.createElement("input");
-  input.type = "text";
-  input.placeholder = "Option " + optionCount;
-  input.name = "Q"+questionCount+"[Option[" + optionCount+"]]";
-  //input.name = "Option" + optionCount;
-  input.id = "o"+optionCount;
-  input.classList.add('form-control');
-
-  var ul = document.createElement("ul");
-  var li = document.createElement("li");
-
-  console.log(input.getAttribute("id"));
-  console.log("inside button");
-  li.appendChild(input);
-  ul.appendChild(li);
-  options.appendChild(ul);
-},
-
-addAnswer: function () {
-  var input = document.createElement("input");
-  var options = document.getElementById("q"+questionCount+"div");
-  input.type = "text";
-  input.placeholder = "Answer " + questionCount;
-  input.name = "Q"+questionCount+"[Answer]";
-  input.classList.add('form-control');
-  input.id = "a" + questionCount;
-
-  document.getElementById('ba'+questionCount).disabled = true;
-  document.getElementById('bd'+questionCount).disabled = false;
-  options.appendChild(input);
-},
-
-clearOptions: function () {
-  var div = document.getElementById("q"+questionCount+"div");
-  div.innerHTML = "";
-  optionCount = 0;
-
-  document.getElementById('ba'+questionCount).disabled = false;
-},
-
-done: function () {
-  document.getElementById("addQ").disabled = false;
-  document.getElementById("ba"+ questionCount).disabled = true;
-  document.getElementById("bq"+ questionCount).disabled = true;
-  console.log("oc",optionCount);
-  optionArray.push(optionCount);
-},
-
-submitCourse: function () {
-  var obj = $('#form').serializeJSON();
-  console.log(questionCount);
-  console.log(optionArray);
-  obj["questionCount"] = questionCount;
-  obj["file_hash"] = hashRet;
-    for (var j = 1; j <= optionArray.length; j++) {
-      var d = "Q"+j;
-      obj[d]["optionCount"] = optionArray[j-1];
-      console.log('objc',obj[d]["optionCount"]);
+  upload: function() {
+    $('#upload').html('<span class="spinner-border spinner-border-sm mr-2" role="status" aria-hidden="true"></span>Loading...')
+      .attr('disabled', true);
+    const reader = new FileReader();
+    console.log(reader);
+    reader.onloadend = function() {
+      // Connect to IPFS
+      const buf = buffer.Buffer(reader.result) // Convert data into buffer
+      console.log(buf);
+      ipfs.files.add(buf, (err, result) => { // Upload buffer to IPFS
+        if (err) {
+          console.error(err)
+          return
+        }
+        let url = `https://ipfs.io/ipfs/${result[0].hash}`
+        //console.log(result[0].hash)
+        hashRet = result[0].hash
+        //console.log(`Url --> ${url}`)
+        //0x17F6AD8Ef982297579C203069C1DbfFE4348c372 stu
+        //0x1aE0EA34a72D944a8C7603FfB3eC30a6669E454C insti
+        $('#upload').html('Upload').attr('disabled', false);
+        alert('File Uploaded Successfully, Click Preview to verify');
+      })
     }
-  console.log('obj', obj);
-  var jsonString = JSON.stringify(obj);
-  console.log('jsonString', jsonString);
-  ipfs.add([buffer.Buffer(jsonString)], function(err, res) {
-    if (err) throw err
-    ipfsHash = res[0].hash
+    const photo = document.getElementById("customFile");
+    reader.readAsArrayBuffer(photo.files[0]); // Read Provided File
 
-    console.log('creating user on eth for',ipfsHash);
-    const source = "https://ipfs.io/ipfs/"+ipfsHash
-    console.log(source);
-    console.log(obj["course_title"]);
-    console.log(ipfsHash);
-    CourseList.createCourse(ipfsHash, obj["course_title"], "MCET", {from: App.account}, function(error, res){
+  },
+
+  addQuestion: function() {
+    questionCount++;
+    //console.log(questionCount);
+    optionCount = 0;
+    var questions = document.getElementById("questions");
+
+    var card = document.createElement("div");
+    card.classList.add('card');
+
+    var cardBody = document.createElement('div');
+    cardBody.id = "f" + questionCount;
+    cardBody.classList.add('card-body');
+
+    var cardHeader = document.createElement('div');
+    cardHeader.classList.add('card-header');
+    cardHeader.innerHTML = "Question " + questionCount;
+
+    var input = document.createElement("input");
+    input.type = "text";
+    //input.name = "Question" + questionCount;
+    input.name = "Q" + questionCount + "[question]";
+    input.placeholder = "Question " + questionCount;
+    input.id = "q" + questionCount;
+    input.classList.add('form-control');
+    //console.log(input.getAttribute("id"));
+
+    var bf = document.createElement('div')
+    bf.classList.add('card-footer')
+
+    var br = document.createElement('br')
+
+    var buttonGroup = document.createElement('div')
+    buttonGroup.classList.add('btn-group')
+    buttonGroup.role = "group";
+
+    var button = document.createElement("button");
+    button.innerHTML = "Add Option";
+    button.id = "bq" + questionCount;
+    button.classList.add("btn");
+    button.classList.add("btn-primary");
+    button.classList.add("btn-sm");
+    button.setAttribute("onclick", "App.addOption(); return false;");
+
+    var ansButton = document.createElement("button");
+    ansButton.innerHTML = "Add Answer";
+    ansButton.id = "ba" + questionCount;
+    ansButton.classList.add("btn");
+    ansButton.classList.add("btn-primary");
+    ansButton.classList.add("btn-sm");
+    ansButton.setAttribute("onclick", "App.addAnswer(); return false;");
+
+    var clearButton = document.createElement("button");
+    clearButton.innerHTML = "Clear";
+    clearButton.id = "bc" + questionCount;
+    clearButton.classList.add("btn");
+    clearButton.classList.add("btn-primary");
+    clearButton.classList.add("btn-sm");
+    clearButton.setAttribute("onclick", "App.clearOptions(); return false;");
+
+    var doneButton = document.createElement("button");
+    doneButton.innerHTML = "Done";
+    doneButton.disabled = true;
+    doneButton.id = "bd" + questionCount;
+    doneButton.classList.add("btn");
+    doneButton.classList.add("btn-primary");
+    doneButton.classList.add("btn-sm");
+    doneButton.setAttribute("onclick", "App.done(); return false;");
+
+    //button.onclick = function(){ addOption(questionCount); } ;
+    //console.log(button.getAttribute("onclick"));
+
+    var optionsDiv = document.createElement("div");
+    optionsDiv.id = "q" + questionCount + "div"
+    document.getElementById("addQ").disabled = true;
+
+
+    cardBody.appendChild(input);
+    cardBody.appendChild(br);
+    cardBody.appendChild(optionsDiv);
+    buttonGroup.appendChild(button);
+    buttonGroup.appendChild(ansButton);
+    buttonGroup.appendChild(clearButton);
+    buttonGroup.appendChild(doneButton);
+    bf.appendChild(buttonGroup);
+    card.appendChild(cardHeader);
+    card.appendChild(cardBody);
+    card.appendChild(bf);
+    questions.appendChild(card);
+  },
+
+  addOption: function() {
+    console.log(questionCount);
+    optionCount++;
+    var options = document.getElementById("q" + questionCount + "div");
+    var input = document.createElement("input");
+    input.type = "text";
+    input.placeholder = "Option " + optionCount;
+    input.name = "Q" + questionCount + "[Option[" + optionCount + "]]";
+    //input.name = "Option" + optionCount;
+    input.id = "o" + optionCount;
+    input.classList.add('form-control');
+
+    var ul = document.createElement("ul");
+    var li = document.createElement("li");
+
+    console.log(input.getAttribute("id"));
+    console.log("inside button");
+    li.appendChild(input);
+    ul.appendChild(li);
+    options.appendChild(ul);
+  },
+
+  addAnswer: function() {
+    var input = document.createElement("input");
+    var options = document.getElementById("q" + questionCount + "div");
+    input.type = "text";
+    input.placeholder = "Answer " + questionCount;
+    input.name = "Q" + questionCount + "[Answer]";
+    input.classList.add('form-control');
+    input.id = "a" + questionCount;
+
+    document.getElementById('ba' + questionCount).disabled = true;
+    document.getElementById('bd' + questionCount).disabled = false;
+    options.appendChild(input);
+  },
+
+  clearOptions: function() {
+    var div = document.getElementById("q" + questionCount + "div");
+    div.innerHTML = "";
+    optionCount = 0;
+
+    document.getElementById('ba' + questionCount).disabled = false;
+  },
+
+  done: function() {
+    document.getElementById("addQ").disabled = false;
+    document.getElementById("ba" + questionCount).disabled = true;
+    document.getElementById("bq" + questionCount).disabled = true;
+    console.log("oc", optionCount);
+    optionArray.push(optionCount);
+  },
+
+  submitCourse: function() {
+    $('#submit').html('<span class="spinner-border spinner-border-sm mr-2" role="status" aria-hidden="true"></span>Loading...')
+      .attr('disabled', true);
+    /*var obj = $('#form').serializeJSON();
+    console.log(questionCount);
+    console.log(optionArray);
+    obj["questionCount"] = questionCount;
+    obj["file_hash"] = hashRet;
+    for (var j = 1; j <= optionArray.length; j++) {
+      var d = "Q" + j;
+      obj[d]["optionCount"] = optionArray[j - 1];
+      console.log('objc', obj[d]["optionCount"]);
+    }
+    console.log('obj', obj);
+    var jsonString = JSON.stringify(obj);
+    console.log('jsonString', jsonString);
+    ipfs.add([buffer.Buffer(jsonString)], function(err, res) {
+      if (err) throw err
+      ipfsHash = res[0].hash
+
+      console.log('creating user on eth for', ipfsHash);
+      const source = "https://ipfs.io/ipfs/" + ipfsHash
+      console.log(source);
+      console.log(obj["course_title"]);
+      console.log(ipfsHash);*/
+    signerT.createCourse("QmcwST2fhBkCHYAZVMEYTEacEHG3uJYaNr6HCCKPua9KVk", "Blockchain", name, App.account.toString()).catch(function(error) {
       if (!error) {
+        $('#upload').html('Upload').attr('disabled', false);
         alert("Course Created")
       }
-    });
-    /*App.contracts.CourseList.deployed().then(function(instance) {
-        return instance.createCourse(ipfsHash, obj["course_title"], "MCET", {from: App.account});
-      }).then(function(result) {
-        // Wait for votes to update
-        alert("Done");
-      }).catch(function(err) {
-        console.error(err);
-      });*/
-  });
-
-
-
-  //http://localhost:8080/ipfs/QmaLBPiSggsC2xJJc2fFFuzomFSoHz3Fhoe8T13jjLhhxe
+      //})
+      //http://localhost:8080/ipfs/QmaLBPiSggsC2xJJc2fFFuzomFSoHz3Fhoe8T13jjLhhxe
+    })
+  }
 }
-}
+
 $(() => {
   $(window).load(() => {
     App.load()
@@ -342,7 +459,7 @@ $(() => {
     link2: "myfacebook.com"
   })*/
 
-  /*var userJson = {
+/*var userJson = {
       username: "username",
       title: "title",
       intro: {

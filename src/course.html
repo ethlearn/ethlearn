@@ -1,51 +1,68 @@
 <!DOCTYPE html>
 <html lang="en" dir="ltr">
-  <head>
-    <meta charset="utf-8">
-    <title>Course</title>
-    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
-    <script src="https://unpkg.com/ipfs-api@9.0.0/dist/index.js"
-    integrity="sha384-5bXRcW9kyxxnSMbOoHzraqa7Z0PQWIao+cgeg327zit1hz5LZCEbIMx/LWKPReuB"
-    crossorigin="anonymous"></script>
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
 
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
-    <script type="text/javascript" src="jquery.serializejson.js"></script>
-    <script src="https://unpkg.com/ipfs@0.41.0-rc.2/dist/index.min.js"></script>
-    <script src="https://unpkg.com/hlsjs-ipfs-loader@0.2.3/dist/index.min.js"></script>
-    <script type="text/javascript" src="cookie.js">
-    <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
-    <script type="text/javascript" src="viewCourse.js">
+<head>
+  <meta charset="utf-8">
+  <title>Course</title>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <script src="https://unpkg.com/ipfs-api@9.0.0/dist/index.js" integrity="sha384-5bXRcW9kyxxnSMbOoHzraqa7Z0PQWIao+cgeg327zit1hz5LZCEbIMx/LWKPReuB" crossorigin="anonymous"></script>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
 
-    </script>
-    <style media="screen">
-      ul{
-        list-style-type: none;
-      }
-      .title{
-        color: #435df8;
-        margin: auto;
-      }
-    </style>
-  </head>
-  <header >
-                  <nav class="navbar navbar-expand-sm bg-light navbar-light">
-               <a class="navbar-brand" href="#">
-                <img src="images/logo_ethlearn.png" alt="Logo" style="width:100px;">
-              </a>
-                      <h1 class="title">EthLearn</h1>
-            </nav>
-    </header>
-  <body>
-    <div class="container">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+  <script type="text/javascript" src="jquery.serializejson.js"></script>
+  <script src="https://unpkg.com/ipfs@0.41.0-rc.2/dist/index.min.js"></script>
+  <script src="https://unpkg.com/@metamask/detect-provider/dist/detect-provider.min.js"></script>
+  <script src="https://cdn.ethers.io/lib/ethers-5.0.umd.min.js" type="application/javascript"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@metamask/onboarding@1.0.0/dist/metamask-onboarding.bundle.js"></script>
+  <script type="text/javascript" src="web3.js"></script>
+
+  <script type="text/javascript" src="cookie.js">
+    < script src = "https://cdn.jsdelivr.net/npm/hls.js@latest" >
+  </script>
+  <script type="text/javascript" src="account.js">
+
+  </script>
+  <style media="screen">
+    ul {
+      list-style-type: none;
+    }
+
+    .title {
+      color: #435df8;
+      margin: auto;
+    }
+  </style>
+</head>
+<header>
+  <nav class="navbar navbar-expand-sm bg-light navbar-light">
+    <a class="navbar-brand" href="#">
+      <img src="images/logo_ethlearn.png" alt="Logo" style="width:100px;">
+    </a>
+    <h1 class="title">EthLearn</h1>
+    <a href="learn.html" id="details">
+      <div class="profile">
+        <div id="imgContainer">
+        </div>
+        <div style="float: left; text-align: right; margin-right:10px">
+          <label id="userName" for="imgContainer">Name</label><br>
+          <label id="accountHash" for="imgContainer">Account</label>
+        </div>
+
+      </div>
+    </a>
+  </nav>
+</header>
+
+<body>
+  <div class="container">
     <div id="data">
       <h1 id="cTitle"></h1>
       <iframe id="pdfFile" width="100%" height="500px"></iframe>
       <form id='form'>
-          <div class="card">
-            <div class="card-header">Questions</div>
-            <div class="card-body" id="questionsResult">
-              <!--<ol>
+        <div class="card">
+          <div class="card-header">Questions</div>
+          <div class="card-body" id="questionsResult">
+            <!--<ol>
                 <li>hi
                     <ul style="list-style-type:none;">
                       <li><input type="radio" name="h" value=""></li>
@@ -53,15 +70,23 @@
                     </ul>
                 </li>
               </ol>-->
-            </div>
           </div>
-          <div class="card-footer">
-          <button class="btn btn-primary" onclick="submitAnswer(); return false;">Submit</button>
+        </div>
+        <div class="card-footer">
+          <button class="btn btn-primary" onclick="App.submitAnswer(); return false;">Submit</button>
         </div>
       </form>
     </div>
-
+    <div class="card">
+      <h3 class="card-header">Students List</h3>
+      <div class="card-body">
+        <ol id="studentsList">
+        </ol>
+      </div>
 
     </div>
-  </body>
+
+  </div>
+</body>
+
 </html>
