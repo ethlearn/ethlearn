@@ -55,7 +55,7 @@ async function getAccount() {
   // Note that this event is emitted on page load.
   // If the array of accounts is non-empty, you're already
   // connected.
-  /*ethereum.on('accountsChanged', handleAccountsChanged);
+  ethereum.on('accountsChanged', handleAccountsChanged);
 
   // For now, 'eth_accounts' will continue to always return an array
   function handleAccountsChanged(accounts) {
@@ -68,7 +68,7 @@ async function getAccount() {
       console.log(currentAccount);
       return currentAccount;
     }
-  }*/
+  }
 }
 
 /*********************************************/
