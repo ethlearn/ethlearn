@@ -1,14 +1,20 @@
 window.$ = window.jQuery = jQuery;
 const queryString = window.location.search;
-console.log(queryString);
+////console.log(queryString);
 const urlParams = new URLSearchParams(queryString);
 const name = urlParams.get('name')
+const id = urlParams.get('id')
+const student = urlParams.get('user')
 var hashRet = "";
 var questionCount = 0;
 var optionCount = 0;
 var optionArray = [];
 var ipfsHash = "";
 var signerT = "";
+var signer = "";
+var signerUser = "";
+var signature = "";
+var pdfBytes = "";
 //const ipfs = window.IpfsApi('localhost', 5001)
 const buffer = require('buffer');
 const ipfs = window.IpfsApi({
@@ -28,13 +34,17 @@ App = {
     await App.loadAccount()
     await App.loadContract()
     //await App.render()
+    if (window.location.pathname == "/issueCertificate.html") {
+      ////console.log("zdfsfn");
+      await App.modifyPdf()
+    }
   },
 
   loadAccount: async () => {
     document.getElementById('userName').innerHTML = name;
     document.getElementById('accountHash').innerHTML = App.account;
-    window.ethereum.on('accountsChanged', function(accounts) {
-      console.log(accounts);
+    window.ethereum.on('accountsChanged', function (accounts) {
+      ////console.log(accounts);
       window.location.reload()
       App.account = accounts[0];
     })
@@ -44,122 +54,333 @@ App = {
 
     //use for local deploy
 
-    //    const list = await $.getJSON('CourseList.json')
-    //console.log(list);
-    /*App.contracts.CourseList = TruffleContract(list)
-    App.contracts.CourseList.setProvider(App.web3Provider)
-
-    App.list = await App.contracts.CourseList.deployed()*/
-
-    //use for test network deploy
-
+    //const list = await $.getJSON('CourseList.json')
+    //const user = await $.getJSON('UserContract.json')
     const provider = new ethers.providers.Web3Provider(App.Provider)
-    const signer = provider.getSigner()
-    console.log(signer);
+    signer = provider.getSigner()
+    ////console.log(signer);
 
-    var courseAbi = [{
-        "constant": true,
-        "inputs": [],
-        "name": "courseCount",
-        "outputs": [{
-          "name": "",
-          "type": "uint256"
-        }],
-        "payable": false,
-        "stateMutability": "view",
-        "type": "function",
-        "signature": "0x66055159"
-      },
+    const userAbi = [
       {
         "constant": true,
-        "inputs": [{
-          "name": "",
-          "type": "uint256"
-        }],
-        "name": "courseDetails",
-        "outputs": [{
-            "name": "courseId",
+        "inputs": [],
+        "name": "userCount",
+        "outputs": [
+          {
+            "name": "",
             "type": "uint256"
-          },
-          {
-            "name": "courseName",
-            "type": "string"
-          },
-          {
-            "name": "offeredBy",
-            "type": "string"
-          },
-          {
-            "name": "courseHash",
-            "type": "string"
           }
         ],
         "payable": false,
         "stateMutability": "view",
         "type": "function",
-        "signature": "0xd1be5309"
+        "signature": "0x07973ccf"
       },
       {
-        "inputs": [{
-          "name": "_userContractAddress",
-          "type": "address"
-        }],
-        "payable": false,
-        "stateMutability": "nonpayable",
-        "type": "constructor",
-        "signature": "constructor"
-      },
-      {
-        "constant": false,
-        "inputs": [{
-            "name": "hash",
-            "type": "string"
+        "constant": true,
+        "inputs": [
+          {
+            "name": "",
+            "type": "address"
+          }
+        ],
+        "name": "companyAcc",
+        "outputs": [
+          {
+            "name": "id",
+            "type": "uint256"
           },
           {
             "name": "name",
             "type": "string"
           },
           {
-            "name": "by",
+            "name": "accountHash",
+            "type": "string"
+          }
+        ],
+        "payable": false,
+        "stateMutability": "view",
+        "type": "function",
+        "signature": "0x0b665155"
+      },
+      {
+        "constant": true,
+        "inputs": [
+          {
+            "name": "",
+            "type": "uint256"
+          }
+        ],
+        "name": "institution",
+        "outputs": [
+          {
+            "name": "id",
+            "type": "uint256"
+          },
+          {
+            "name": "name",
             "type": "string"
           },
           {
-            "name": "_institutionHash",
-            "type": "address"
+            "name": "accountHash",
+            "type": "string"
           }
         ],
-        "name": "createCourse",
-        "outputs": [],
         "payable": false,
-        "stateMutability": "nonpayable",
+        "stateMutability": "view",
         "type": "function",
-        "signature": "0x64395a1b"
+        "signature": "0x2eb78bf6"
+      },
+      {
+        "constant": true,
+        "inputs": [
+          {
+            "name": "",
+            "type": "uint256"
+          }
+        ],
+        "name": "student",
+        "outputs": [
+          {
+            "name": "id",
+            "type": "uint256"
+          },
+          {
+            "name": "name",
+            "type": "string"
+          },
+          {
+            "name": "accountHash",
+            "type": "string"
+          }
+        ],
+        "payable": false,
+        "stateMutability": "view",
+        "type": "function",
+        "signature": "0x35f34232"
       },
       {
         "constant": true,
         "inputs": [],
-        "name": "getCourseCount",
-        "outputs": [{
-          "name": "",
-          "type": "uint256"
-        }],
+        "name": "instiCount",
+        "outputs": [
+          {
+            "name": "",
+            "type": "uint256"
+          }
+        ],
         "payable": false,
         "stateMutability": "view",
         "type": "function",
-        "signature": "0x96cfda06"
+        "signature": "0x632b8bc2"
+      },
+      {
+        "constant": true,
+        "inputs": [
+          {
+            "name": "",
+            "type": "address"
+          }
+        ],
+        "name": "studentAcc",
+        "outputs": [
+          {
+            "name": "id",
+            "type": "uint256"
+          },
+          {
+            "name": "name",
+            "type": "string"
+          },
+          {
+            "name": "accountHash",
+            "type": "string"
+          }
+        ],
+        "payable": false,
+        "stateMutability": "view",
+        "type": "function",
+        "signature": "0x8bf06de9"
+      },
+      {
+        "constant": true,
+        "inputs": [],
+        "name": "companyCount",
+        "outputs": [
+          {
+            "name": "",
+            "type": "uint256"
+          }
+        ],
+        "payable": false,
+        "stateMutability": "view",
+        "type": "function",
+        "signature": "0x8e75dd47"
+      },
+      {
+        "constant": true,
+        "inputs": [
+          {
+            "name": "",
+            "type": "address"
+          }
+        ],
+        "name": "institutionAcc",
+        "outputs": [
+          {
+            "name": "id",
+            "type": "uint256"
+          },
+          {
+            "name": "name",
+            "type": "string"
+          },
+          {
+            "name": "accountHash",
+            "type": "string"
+          }
+        ],
+        "payable": false,
+        "stateMutability": "view",
+        "type": "function",
+        "signature": "0x8fc3dc65"
+      },
+      {
+        "constant": true,
+        "inputs": [],
+        "name": "studentCount",
+        "outputs": [
+          {
+            "name": "",
+            "type": "uint256"
+          }
+        ],
+        "payable": false,
+        "stateMutability": "view",
+        "type": "function",
+        "signature": "0xe581f9ee"
+      },
+      {
+        "constant": true,
+        "inputs": [
+          {
+            "name": "",
+            "type": "uint256"
+          }
+        ],
+        "name": "company",
+        "outputs": [
+          {
+            "name": "id",
+            "type": "uint256"
+          },
+          {
+            "name": "name",
+            "type": "string"
+          },
+          {
+            "name": "accountHash",
+            "type": "string"
+          }
+        ],
+        "payable": false,
+        "stateMutability": "view",
+        "type": "function",
+        "signature": "0xeacebba3"
       },
       {
         "constant": false,
-        "inputs": [{
+        "inputs": [
+          {
+            "name": "_name",
+            "type": "string"
+          },
+          {
+            "name": "_account",
+            "type": "address"
+          },
+          {
+            "name": "_accountHash",
+            "type": "string"
+          },
+          {
+            "name": "_userType",
+            "type": "string"
+          }
+        ],
+        "name": "createUser",
+        "outputs": [
+          {
+            "name": "",
+            "type": "uint256"
+          }
+        ],
+        "payable": false,
+        "stateMutability": "nonpayable",
+        "type": "function",
+        "signature": "0xb1307ee4"
+      },
+      {
+        "constant": true,
+        "inputs": [
+          {
+            "name": "_index",
+            "type": "address"
+          }
+        ],
+        "name": "checkUser",
+        "outputs": [
+          {
+            "name": "",
+            "type": "uint256"
+          },
+          {
+            "name": "",
+            "type": "string"
+          },
+          {
+            "name": "",
+            "type": "string"
+          },
+          {
+            "name": "",
+            "type": "uint256[]"
+          }
+        ],
+        "payable": false,
+        "stateMutability": "view",
+        "type": "function",
+        "signature": "0x1e9d48cf"
+      },
+      {
+        "constant": false,
+        "inputs": [
+          {
             "name": "_courseId",
             "type": "uint256"
           },
           {
-            "name": "_userId",
+            "name": "institutionAccount",
+            "type": "address"
+          }
+        ],
+        "name": "addCourse",
+        "outputs": [],
+        "payable": false,
+        "stateMutability": "nonpayable",
+        "type": "function",
+        "signature": "0x92edfa89"
+      },
+      {
+        "constant": false,
+        "inputs": [
+          {
+            "name": "_courseId",
             "type": "uint256"
           },
           {
-            "name": "_registerAccount",
+            "name": "studentAccount",
             "type": "address"
           }
         ],
@@ -168,16 +389,19 @@ App = {
         "payable": false,
         "stateMutability": "nonpayable",
         "type": "function",
-        "signature": "0xaa77db46"
+        "signature": "0xcaa5b84e"
       },
       {
         "constant": true,
-        "inputs": [{
-          "name": "index",
-          "type": "uint256"
-        }],
-        "name": "getCourse",
-        "outputs": [{
+        "inputs": [
+          {
+            "name": "account",
+            "type": "address"
+          }
+        ],
+        "name": "getDetails",
+        "outputs": [
+          {
             "name": "",
             "type": "uint256"
           },
@@ -191,43 +415,400 @@ App = {
           },
           {
             "name": "",
-            "type": "string"
+            "type": "uint256[]"
           }
         ],
         "payable": false,
         "stateMutability": "view",
         "type": "function",
-        "signature": "0x0b91e28d"
+        "signature": "0x30289c61"
       },
       {
         "constant": true,
-        "inputs": [{
-          "name": "id",
-          "type": "uint256"
-        }],
-        "name": "getStudentList",
-        "outputs": [{
-          "name": "",
-          "type": "uint256[]"
-        }],
+        "inputs": [
+          {
+            "name": "index",
+            "type": "uint256"
+          }
+        ],
+        "name": "getStudentDetails",
+        "outputs": [
+          {
+            "name": "",
+            "type": "uint256"
+          },
+          {
+            "name": "",
+            "type": "string"
+          },
+          {
+            "name": "",
+            "type": "string"
+          },
+          {
+            "name": "",
+            "type": "uint256[]"
+          }
+        ],
         "payable": false,
         "stateMutability": "view",
         "type": "function",
-        "signature": "0xe5a43d87"
+        "signature": "0x86a9b364"
+      },
+      {
+        "constant": true,
+        "inputs": [
+          {
+            "name": "userId",
+            "type": "uint256"
+          },
+          {
+            "name": "_courseId",
+            "type": "uint256"
+          }
+        ],
+        "name": "getCourseInfo",
+        "outputs": [
+          {
+            "name": "",
+            "type": "uint256"
+          },
+          {
+            "name": "",
+            "type": "string"
+          },
+          {
+            "name": "",
+            "type": "string"
+          },
+          {
+            "name": "",
+            "type": "bool"
+          },
+          {
+            "name": "",
+            "type": "uint256"
+          }
+        ],
+        "payable": false,
+        "stateMutability": "view",
+        "type": "function",
+        "signature": "0xd7c1f144"
+      },
+      {
+        "constant": false,
+        "inputs": [
+          {
+            "name": "_courseId",
+            "type": "uint256"
+          },
+          {
+            "name": "_marks",
+            "type": "uint256"
+          },
+          {
+            "name": "studentAccount",
+            "type": "address"
+          }
+        ],
+        "name": "submitAnswers",
+        "outputs": [],
+        "payable": false,
+        "stateMutability": "nonpayable",
+        "type": "function",
+        "signature": "0x72cd73da"
+      },
+      {
+        "constant": false,
+        "inputs": [
+          {
+            "name": "_courseId",
+            "type": "uint256"
+          },
+          {
+            "name": "_certificateHash",
+            "type": "string"
+          },
+          {
+            "name": "_signature",
+            "type": "string"
+          },
+          {
+            "name": "studentAccount",
+            "type": "address"
+          }
+        ],
+        "name": "issueCertificate",
+        "outputs": [],
+        "payable": false,
+        "stateMutability": "nonpayable",
+        "type": "function",
+        "signature": "0xee96c675"
       }
     ]
-    //console.log(web3.version);
-
-    CourseList = new ethers.Contract('0xd2370aa2fABb6A3Cafa2e32C2618556800C6D0ae', courseAbi, provider);
+    const courseAbi = [
+    {
+      "constant": true,
+      "inputs": [],
+      "name": "courseCount",
+      "outputs": [
+        {
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "view",
+      "type": "function",
+      "signature": "0x66055159"
+    },
+    {
+      "constant": true,
+      "inputs": [
+        {
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "name": "courseDetails",
+      "outputs": [
+        {
+          "name": "courseId",
+          "type": "uint256"
+        },
+        {
+          "name": "courseName",
+          "type": "string"
+        },
+        {
+          "name": "offeredBy",
+          "type": "string"
+        },
+        {
+          "name": "courseHash",
+          "type": "string"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "view",
+      "type": "function",
+      "signature": "0xd1be5309"
+    },
+    {
+      "inputs": [
+        {
+          "name": "_userContractAddress",
+          "type": "address"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "nonpayable",
+      "type": "constructor",
+      "signature": "constructor"
+    },
+    {
+      "constant": false,
+      "inputs": [
+        {
+          "name": "hash",
+          "type": "string"
+        },
+        {
+          "name": "name",
+          "type": "string"
+        },
+        {
+          "name": "by",
+          "type": "string"
+        },
+        {
+          "name": "_institutionHash",
+          "type": "address"
+        }
+      ],
+      "name": "createCourse",
+      "outputs": [],
+      "payable": false,
+      "stateMutability": "nonpayable",
+      "type": "function",
+      "signature": "0x64395a1b"
+    },
+    {
+      "constant": true,
+      "inputs": [],
+      "name": "getCourseCount",
+      "outputs": [
+        {
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "view",
+      "type": "function",
+      "signature": "0x96cfda06"
+    },
+    {
+      "constant": false,
+      "inputs": [
+        {
+          "name": "_courseId",
+          "type": "uint256"
+        },
+        {
+          "name": "_userId",
+          "type": "uint256"
+        },
+        {
+          "name": "_registerAccount",
+          "type": "address"
+        }
+      ],
+      "name": "registerCourse",
+      "outputs": [],
+      "payable": false,
+      "stateMutability": "nonpayable",
+      "type": "function",
+      "signature": "0xaa77db46"
+    },
+    {
+      "constant": true,
+      "inputs": [
+        {
+          "name": "index",
+          "type": "uint256"
+        }
+      ],
+      "name": "getCourse",
+      "outputs": [
+        {
+          "name": "",
+          "type": "uint256"
+        },
+        {
+          "name": "",
+          "type": "string"
+        },
+        {
+          "name": "",
+          "type": "string"
+        },
+        {
+          "name": "",
+          "type": "string"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "view",
+      "type": "function",
+      "signature": "0x0b91e28d"
+    },
+    {
+      "constant": true,
+      "inputs": [
+        {
+          "name": "id",
+          "type": "uint256"
+        }
+      ],
+      "name": "getStudentList",
+      "outputs": [
+        {
+          "name": "",
+          "type": "uint256[]"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "view",
+      "type": "function",
+      "signature": "0xe5a43d87"
+    }
+  ]
+    //////console.log(web3.version);
+    UserContract = new ethers.Contract("0xF6F28868f0Bb99D9F72F917762A04A15e196EBa9", userAbi, provider)
+    CourseList = new ethers.Contract('0x5C5846C242bc5E6BA3275aA4E572ef5E4EDD3070', courseAbi, provider);
     signerT = CourseList.connect(signer)
-    //console.log(CourseList);
+    signerUser = UserContract.connect(signer)
+    //////console.log(CourseList);
 
   },
-  filePreview: function() {
+  modifyPdf: async () => {
+
+    const {
+      degrees,
+      PDFDocument,
+      rgb,
+      StandardFonts
+    } = PDFLib
+    // Fetch an existing PDF document
+    const url = 'cert.pdf'
+    const existingPdfBytes = await fetch(url).then(res => res.arrayBuffer())
+
+    // Load a PDFDocument from the existing PDF bytes
+    const pdfDoc = await PDFDocument.load(existingPdfBytes)
+
+    // Embed the Helvetica font
+    const helveticaFont = await pdfDoc.embedFont(StandardFonts.Helvetica)
+
+    // Get the first page of the document
+    const pages = pdfDoc.getPages()
+    const firstPage = pages[0]
+
+    // Get the width and height of the first page
+    const {
+      width,
+      height
+    } = firstPage.getSize()
+    //console.log(student);
+    const name = await UserContract.checkUser(student)
+    //console.log(name[1]);
+    const coursename = await CourseList.getCourse(id)
+    //console.log(coursename[2]);
+
+    // Draw a string of text diagonally across the first page
+    firstPage.drawText(name[1], {
+      x: 108,
+      y: 335,
+      size: 35,
+      font: helveticaFont
+    })
+    firstPage.drawText(coursename[1], {
+      x: 108,
+      y: 245,
+      size: 25,
+      font: helveticaFont
+    })
+    firstPage.drawText(coursename[2], {
+      x: 108,
+      y: 110,
+      size: 20,
+      font: helveticaFont
+    })
+    firstPage.drawText(App.account.toString(), {
+      x: 108,
+      y: 90,
+      size: 12,
+      font: helveticaFont
+    })
+    firstPage.drawText('100%', {
+      x: 220,
+      y: 217.5,
+      size: 15.6,
+      font: helveticaFont
+    })
+    // Serialize the PDFDocument to bytes (a Uint8Array)
+    pdfBytes = await pdfDoc.save()
+    //console.log(pdfBytes);
+    const pdfDataUri = await pdfDoc.saveAsBase64({
+      dataUri: true
+    });
+    document.getElementById('pdf').src = pdfDataUri;
+  },
+  filePreview: function () {
     var x = document.getElementById("files");
     if (x.style.display === "none") {
       x.style.display = "block";
-      console.log(hashRet);
+      //console.log(hashRet);
       var pdfFile = document.getElementById("pdfFile");
       const source = "https://ipfs.io/ipfs/" + hashRet
       pdfFile.src = source
@@ -237,38 +818,93 @@ App = {
     }
   },
 
-  upload: function() {
+  sign: async () => {
+    const hash = document.getElementById('certHash').value
+    const descr = "Course Completed Successfully"
+    let payload = ethers.utils.defaultAbiCoder.encode(["string", "string"], [hash, descr]);
+    //console.log("Payload:", payload);
+
+    let payloadHash = ethers.utils.keccak256(payload);
+    //console.log("PayloadHash:", payloadHash);
+    // See the note in the Solidity; basically this would save 6 gas and QmUm5Uwvfyoebz9cXW5HZhczVjH9FkMibNJcj5ur6hhZSa
+    // can potentially add security vulnerabilities in the future
+    // let payloadHash = ethers.utils.solidityKeccak256([ "bytes32", "string" ], [ someHash, someDescr ]);
+
+    // This adds the message prefix
+    signature = await signer.signMessage(ethers.utils.arrayify(payloadHash));
+    //console.log(signature);
+    document.getElementById('sign').value = signature;
+    let sig = ethers.utils.splitSignature(signature);
+    //console.log("Signature:", sig);
+    //console.log("Recovered:", ethers.utils.verifyMessage(ethers.utils.arrayify(payloadHash), sig));
+  },
+
+  issueCertificate: async () => {
+    const hash = document.getElementById('certHash').value
+    //console.log(signature);
+    //console.log(id);
+    //console.log(student);
+    signerUser.issueCertificate(id, hash, signature, student).catch(function (error) {
+      if (!error) {
+        alert("Certificate Issued")
+        window.location.href = "course.html?id" + id + "&type=" + "Insti"
+      }
+    })
+  },
+
+  upload: function () {
     $('#upload').html('<span class="spinner-border spinner-border-sm mr-2" role="status" aria-hidden="true"></span>Loading...')
       .attr('disabled', true);
-    const reader = new FileReader();
-    console.log(reader);
-    reader.onloadend = function() {
-      // Connect to IPFS
-      const buf = buffer.Buffer(reader.result) // Convert data into buffer
-      console.log(buf);
+
+    if (window.location.pathname == "/issueCertificate.html") {
+      //console.log("nfufub");
+      const buf = buffer.Buffer(pdfBytes)
       ipfs.files.add(buf, (err, result) => { // Upload buffer to IPFS
         if (err) {
-          console.error(err)
+          //console.error(err)
           return
         }
-        let url = `https://ipfs.io/ipfs/${result[0].hash}`
-        //console.log(result[0].hash)
-        hashRet = result[0].hash
-        //console.log(`Url --> ${url}`)
+        ////console.log(result[0].hash)
+        document.getElementById("certHash").value = result[0].hash;
+        ////console.log(`Url --> ${url}`)
         //0x17F6AD8Ef982297579C203069C1DbfFE4348c372 stu
         //0x1aE0EA34a72D944a8C7603FfB3eC30a6669E454C insti
         $('#upload').html('Upload').attr('disabled', false);
         alert('File Uploaded Successfully, Click Preview to verify');
       })
-    }
+    } else {
+      //console.log("fvs");
+      const reader = new FileReader();
+      //console.log(reader);
+      reader.onloadend = function () {
+        // Connect to IPFS
+        const buf = buffer.Buffer(reader.result)
+        //console.log(buf);
+        ipfs.files.add(buf, (err, result) => { // Upload buffer to IPFS
+          if (err) {
+            //console.error(err)
+            return
+          }
+          let url = `https://ipfs.io/ipfs/${result[0].hash}`
+          ////console.log(result[0].hash)
+          hashRet = result[0].hash
+          ////console.log(`Url --> ${url}`)
+          //0x17F6AD8Ef982297579C203069C1DbfFE4348c372 stu
+          //0x1aE0EA34a72D944a8C7603FfB3eC30a6669E454C insti
+          $('#upload').html('Upload').attr('disabled', false);
+          alert('File Uploaded Successfully, Click Preview to verify');
+        })
+      }
+
     const photo = document.getElementById("customFile");
     reader.readAsArrayBuffer(photo.files[0]); // Read Provided File
+    }
 
   },
 
-  addQuestion: function() {
+  addQuestion: function () {
     questionCount++;
-    //console.log(questionCount);
+    ////console.log(questionCount);
     optionCount = 0;
     var questions = document.getElementById("questions");
 
@@ -290,7 +926,7 @@ App = {
     input.placeholder = "Question " + questionCount;
     input.id = "q" + questionCount;
     input.classList.add('form-control');
-    //console.log(input.getAttribute("id"));
+    ////console.log(input.getAttribute("id"));
 
     var bf = document.createElement('div')
     bf.classList.add('card-footer')
@@ -335,8 +971,8 @@ App = {
     doneButton.setAttribute("onclick", "App.done(); return false;");
 
     //button.onclick = function(){ addOption(questionCount); } ;
-    //console.log(button.getAttribute("onclick"));
-
+    ////console.log(button.getAttribute("onclick"));
+    name
     var optionsDiv = document.createElement("div");
     optionsDiv.id = "q" + questionCount + "div"
     document.getElementById("addQ").disabled = true;
@@ -356,8 +992,8 @@ App = {
     questions.appendChild(card);
   },
 
-  addOption: function() {
-    console.log(questionCount);
+  addOption: function () {
+    //console.log(questionCount);
     optionCount++;
     var options = document.getElementById("q" + questionCount + "div");
     var input = document.createElement("input");
@@ -371,14 +1007,14 @@ App = {
     var ul = document.createElement("ul");
     var li = document.createElement("li");
 
-    console.log(input.getAttribute("id"));
-    console.log("inside button");
+    //console.log(input.getAttribute("id"));
+    //console.log("inside button");
     li.appendChild(input);
     ul.appendChild(li);
     options.appendChild(ul);
   },
 
-  addAnswer: function() {
+  addAnswer: function () {
     var input = document.createElement("input");
     var options = document.getElementById("q" + questionCount + "div");
     input.type = "text";
@@ -392,7 +1028,7 @@ App = {
     options.appendChild(input);
   },
 
-  clearOptions: function() {
+  clearOptions: function () {
     var div = document.getElementById("q" + questionCount + "div");
     div.innerHTML = "";
     optionCount = 0;
@@ -400,42 +1036,51 @@ App = {
     document.getElementById('ba' + questionCount).disabled = false;
   },
 
-  done: function() {
+  done: function () {
     document.getElementById("addQ").disabled = false;
     document.getElementById("ba" + questionCount).disabled = true;
     document.getElementById("bq" + questionCount).disabled = true;
-    console.log("oc", optionCount);
+    //console.log("oc", optionCount);
     optionArray.push(optionCount);
   },
 
-  submitCourse: function() {
+  submitCourse: function () {
     $('#submit').html('<span class="spinner-border spinner-border-sm mr-2" role="status" aria-hidden="true"></span>Loading...')
       .attr('disabled', true);
     var obj = $('#form').serializeJSON();
-    console.log(questionCount);
-    console.log(optionArray);
+    //console.log(questionCount);
+    //console.log(optionArray);
     obj["questionCount"] = questionCount;
     obj["file_hash"] = hashRet;
+    /*let privateKey = document.getElementById("privateKey").value;
+    //console.log(privateKey);
+    const cipher = CryptoJS.AES.encrypt('my message', privateKey).toString();  
+    //console.log(cipher);
+    var bytes  = CryptoJS.AES.decrypt(cipher, privateKey);
+  var originalText = bytes.toString(CryptoJS.enc.Utf8);
+  //console.log(originalText);*/
     for (var j = 1; j <= optionArray.length; j++) {
       var d = "Q" + j;
+      /*let encryptedAnswer = CryptoJS.AES.encrypt(obj[d]["Answer"], privateKey).toString();
+      obj[d]["Answer"] = encryptedAnswer;*/
       obj[d]["optionCount"] = optionArray[j - 1];
-      console.log('objc', obj[d]["optionCount"]);
+      //console.log('objc', obj[d]["optionCount"]);
     }
-    console.log('obj', obj);
+    //console.log('obj', obj);
     var jsonString = JSON.stringify(obj);
-    console.log('jsonString', jsonString);
-    ipfs.add([buffer.Buffer(jsonString)], function(err, res) {
+    //console.log('jsonString', jsonString);
+    ipfs.add([buffer.Buffer(jsonString)], function (err, res) {
       if (err) throw err
       ipfsHash = res[0].hash
 
-      console.log('creating user on eth for', ipfsHash);
+      //console.log('creating user on eth for', ipfsHash);
       const source = "https://ipfs.io/ipfs/" + ipfsHash
-      console.log(source);
-      console.log(obj["course_title"]);
-      console.log(ipfsHash);
-      signerT.createCourse("QmcwST2fhBkCHYAZVMEYTEacEHG3uJYaNr6HCCKPua9KVk", "Blockchain", name, App.account.toString()).catch(function(error) {
+      //console.log(source);
+      //console.log(obj["course_title"]);
+      //console.log(ipfsHash);
+      signerT.createCourse(ipfsHash, obj["course_title"], name, App.account.toString()).catch(function (error) {
         if (!error) {
-          $('#upload').html('Upload').attr('disabled', false);
+          $('#submit').html('Upload').attr('disabled', false);
           alert("Course Created")
         }
       })
@@ -449,89 +1094,3 @@ $(() => {
     App.load()
   })
 })
-//const MyContract = artifacts.require("MyContract")
-
-/*async function test() {
-  /*const data = JSON.stringify({
-    name: "JSON Statehem",
-    link0: "stackexchange.com",
-    link1: "github.com",
-    link2: "myfacebook.com"
-  })*/
-
-/*var userJson = {
-      username: "username",
-      title: "title",
-      intro: {
-        name: "Arvind",
-        roll: "asd"
-      }
-    };
-/*console.log('userJson', userJson);
-    ipfs.add([buffer.Buffer(JSON.stringify(userJson))], function(err, res) {
-      if (err) throw err
-      ipfsHash = res[0].hash
-
-      console.log('creating user on eth for',ipfsHash);
-      const source = "http://localhost:8080/ipfs/"+ipfsHash
-      console.log(source);
-    });
-  //const ipfsHash = await ipfs.add(data)
-  //const instance = await MyContract.deployed()
-
-  //await instance.setHash.sendTransaction(ipfsHash)
-
-  //let returnedHash = await instance.ipfsHash.call()
-
-  //console.log(ipfsHash)
-  //console.log(returnedHash)
-
-  //console.log(JSON.parse(await ipfs.cat(returnedHash)))
-
-}
-
-test()
-// Setting HLS Config values
-/*Hls.DefaultConfig.loader = HlsjsIpfsLoader
-Hls.DefaultConfig.debug = false
-
-async function P2PMagic () {
-  if (!Hls.isSupported()) {
-    return displayError(new Error('Your Browser does not support the HTTP Live Streaming Protocol'))
-  }
-
-  const video = document.getElementById('video')
-  const bigBuckBunnyCID = 'QmYGs1ksGX3eMiGvxNuvRT6PD7zPKZpHyiUDXKGQoL4R7S'
-
-  // Create an IPFS node inside your browser
-  let node;
-  // Init a new repo for this run
-  const repoPath = 'ipfs-' + Math.random()
-  try {
-    // Instatiate your IPFS node
-    node = await Ipfs.create({ repo: repoPath })
-  } catch(err) {
-    displayError(err)
-  }
-
-  const hls = new Hls()
-  hls.config.ipfs = node
-  hls.config.ipfsHash = bigBuckBunnyCID
-  hls.loadSource('master.m3u8')
-  hls.attachMedia(video)
-  hls.on(Hls.Events.MANIFEST_PARSED, () => video.play())
-}
-
-function displayError(err) {
-  const modalElement = document.getElementById('modal');
-  modalElement.style.display = 'flex';
-
-  const errStr = String(err).toLowerCase();
-  const spanElement = document.getElementById('errorText');
-
-  spanElement.innerHTML = errorStr.includes('SecurityError'.toLowerCase())
-    ? 'You must use Chrome or Firefox to test this embedded app!'
-    : 'Something went wrong. See the console to get further details.';
-}
-
-P2PMagic()*/

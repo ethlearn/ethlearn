@@ -11,12 +11,20 @@ contract UserContract {
     uint public companyCount = 0;
     uint public userCount = 0;
 
+    struct CourseInfo{
+        uint courseId;
+        bool status;
+        string certificateHash;
+        uint marks;
+        string signature;
+    }
+
     struct Student{
         uint id;
         string name;
         string accountHash;
         uint[] courses;
-        CourseInfo[] courseInfo;
+        mapping(uint => CourseInfo) courseInfo;
     }
 
     struct Institution{
@@ -30,13 +38,6 @@ contract UserContract {
         uint id;
         string name;
         string accountHash;
-    }
-
-    struct CourseInfo{
-        uint courseId;
-        bool status;
-        string certificateHash;
-        uint mark;
     }
 
     mapping(uint => Student) public student;
@@ -123,20 +124,21 @@ contract UserContract {
 
     function addCourse(uint _courseId, address institutionAccount) public{
         institutionAcc[institutionAccount].courses.push(_courseId);
-        uint userId = institutionAcc[institutionAccount].id;
-
-        institution[userId].courses.push(_courseId);
     }
 
     function registerCourse(uint _courseId, address studentAccount) public{
         studentAcc[studentAccount].courses.push(_courseId);
+        //StudentAcc storage s = studentAcc[studentAccount];
+
         uint userId = studentAcc[studentAccount].id;
 
         student[userId].courses.push(_courseId);
+        student[userId].courseInfo[_courseId].courseId = _courseId;
+        student[userId].courseInfo[_courseId].status = false;
     }
 
-    function getInstituionDetails(uint id) public view returns(uint, string memory, string memory, uint [] memory) {
-        return (institution[id].id, institution[id].name, institution[id].accountHash, institution[id].courses);
+    function getDetails(address account) public view returns(uint, string memory, string memory, uint [] memory) {
+        return (institutionAcc[account].id, institutionAcc[account].name, institutionAcc[account].accountHash, institutionAcc[account].courses);
     }
 
 
@@ -144,4 +146,28 @@ contract UserContract {
         return (student[index].id, student[index].name, student[index].accountHash, student[index].courses);
     }
 
+    function getCourseInfo(uint userId, uint _courseId) public view returns(uint, string memory, string memory, bool, uint){
+        return (student[userId].courseInfo[_courseId].courseId,student[userId].courseInfo[_courseId].signature , student[userId].courseInfo[_courseId].certificateHash, student[userId].courseInfo[_courseId].status, student[userId].courseInfo[_courseId].marks);
+    }
+
+    function submitAnswers(uint _courseId, uint _marks, address studentAccount) public {
+        studentAcc[studentAccount].courseInfo[_courseId].marks = _marks;
+        studentAcc[studentAccount].courseInfo[_courseId].status = true;
+        uint userId = studentAcc[studentAccount].id;
+
+        student[userId].courseInfo[_courseId].marks = _marks;
+        student[userId].courseInfo[_courseId].status = true;
+
+    }
+
+    function issueCertificate(uint _courseId, string memory _certificateHash, string memory _signature, address studentAccount) public{
+        studentAcc[studentAccount].courseInfo[_courseId].certificateHash = _certificateHash;
+        studentAcc[studentAccount].courseInfo[_courseId].signature = _signature;
+        uint userId = studentAcc[studentAccount].id;
+
+        student[userId].courseInfo[_courseId].certificateHash = _certificateHash;
+        student[userId].courseInfo[_courseId].signature = _signature;
+
+
+    }
 }

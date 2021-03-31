@@ -51,37 +51,27 @@
 
 <body>
   <div class="container">
-    <div id="data">
-      <h1 id="cTitle"></h1>
-      <iframe id="pdfFile" width="100%" height="500px"></iframe>
-      <form id='form'>
-        <div class="card">
-          <div class="card-header">Questions</div>
-          <div class="card-body" id="questionsResult">
-            <!--<ol>
-                <li>hi
-                    <ul style="list-style-type:none;">
-                      <li><input type="radio" name="h" value=""></li>
-                      <li><input type="radio" name="h" value=""></li>
-                    </ul>
-                </li>
-              </ol>-->
-          </div>
+    <div id="profile">
+      <div class="card">
+        <div class="card-body">
+          <h4 id="title" class="card-title">Name</h4>
+          <p id="account" class="card-text">Address</p>
+          <p id="noCourses" class="card-text">No of Courses: </p>
         </div>
-        <div class="card-footer">
-          <button class="btn btn-primary" id="submitMarks">Submit</button>
-        </div>
-      </form>
+      </div>
     </div>
     <div id="list" class="card">
-      <h3 class="card-header">Students List</h3>
+      <h3 class="card-header">Courses</h3>
       <div class="card-body">
-        <ul id="studentsList">
+        <ul id="courseList">
         </ul>
       </div>
 
     </div>
 
+    <div style="display: none" id="files">
+      <iframe id="pdfFile" width="100%" height="500px"></iframe>
+    </div>
   </div>
 </body>
 
