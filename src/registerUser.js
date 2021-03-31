@@ -26,7 +26,7 @@ App = {
     // Create a JavaScript version of the smart contract
 
     //Use for local deploy
-    const user = await $.getJSON('UserContract.json')
+    //const user = await $.getJSON('UserContract.json')
     var userContractAbi = [
     {
       "constant": true,

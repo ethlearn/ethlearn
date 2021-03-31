@@ -31,6 +31,7 @@ function handleChainChanged(_chainId) {
 /* Handle user accounts and accountsChanged (per EIP-1193) */
 /***********************************************************/
 async function getAccount() {
+  connect();
   let currentAccount = null;
   /*await window.ethereum.request({
     method: 'eth_requestAccounts'
