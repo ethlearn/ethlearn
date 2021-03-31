@@ -40,7 +40,7 @@ async function getAccount() {
     .request({
       method: 'eth_accounts'
     })
-    .then(function(result) {
+    .then(function (result) {
       console.log(result);
       currentAccount = result;
       return currentAccount;
@@ -52,10 +52,32 @@ async function getAccount() {
       console.error(err);
     });
 
+
+  // While you are awaiting the call to eth_requestAccounts, you should disable
+  // any buttons the user can click to initiate the request.
+  // MetaMask will reject any additional requests while the first is still
+  // pending.
+  function connect() {
+    ethereum
+      .request({
+        method: 'eth_requestAccounts'
+      })
+      //.then(handleAccountsChanged)
+      .catch((err) => {
+        if (err.code === 4001) {
+          // EIP-1193 userRejectedRequest error
+          // If this happens, the user rejected the connection request.
+          console.log('Please connect to MetaMask.');
+        } else {
+          console.error(err);
+        }
+      });
+  }
+
   // Note that this event is emitted on page load.
   // If the array of accounts is non-empty, you're already
   // connected.
-  ethereum.on('accountsChanged', handleAccountsChanged);
+  //ethereum.on('accountsChanged', handleAccountsChanged);
 
   // For now, 'eth_accounts' will continue to always return an array
   function handleAccountsChanged(accounts) {
@@ -80,25 +102,4 @@ async function getAccount() {
 // Otherwise, you popup-spam the user like it's 1999.
 // If you fail to retrieve the user's account(s), you should encourage the user
 // to initiate the attempt.
-document.getElementById('connectButton', connect);
-
-// While you are awaiting the call to eth_requestAccounts, you should disable
-// any buttons the user can click to initiate the request.
-// MetaMask will reject any additional requests while the first is still
-// pending.
-function connect() {
-  ethereum
-    .request({
-      method: 'eth_requestAccounts'
-    })
-    .then(handleAccountsChanged)
-    .catch((err) => {
-      if (err.code === 4001) {
-        // EIP-1193 userRejectedRequest error
-        // If this happens, the user rejected the connection request.
-        console.log('Please connect to MetaMask.');
-      } else {
-        console.error(err);
-      }
-    });
-}
+//document.getElementById('connectButton', connect);
